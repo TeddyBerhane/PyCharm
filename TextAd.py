@@ -1,6 +1,6 @@
 from gameClasses import obj_wrapper as wrap
 from ast import literal_eval
-# from player import Player
+from player import Player
 from msvcrt import getch, putch
 import time, os, sys, pygame.mixer
 from Q2API.util import logging
@@ -8,11 +8,11 @@ import traceback
 pygame.mixer.init()
 logger = logging.out_file_instance('Zombie Raid')
 
+
 def main():
-
-
-    global inv, health, points, gameAmmo, gun, gunDamage
-    inv = {}
+    
+    P = Player()
+    global  health, points, gameAmmo, gun, gunDamage
     health = 75
     points = 0
     gameAmmo = 0
@@ -53,9 +53,9 @@ def main():
                         "": "BAD_COMMAND"}
 
     verbs = {"go": "go", "g": "go", "walk": "go",
-         "take": "take", "t": "take", "grab": "take"}
+            "take": "take", "t": "take", "grab": "take"}
 
-    def homeScreen():
+    def homeScreen(P):
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
         global inv, health, points, gameAmmo, gun, gunDamage
@@ -70,7 +70,7 @@ def main():
             gameAmmo = 0
             gun = False
             gunDamage = 0
-            play()
+            play(P)
         elif command == 27:
             print '\n\n\t\t\t\t\tGood Bye!'
             time.sleep(2)
@@ -79,7 +79,7 @@ def main():
             os.system('CLS')
             print '\n\n\n\tI don\'t understand your command. Please press ENTER to play, or ESC to exit. ' \
                   'Please try again. \n\n'
-            homeScreen()
+            homeScreen(P)
 
     def lookForItems(current_room):
         items = room_dict[current_room].Items
@@ -88,7 +88,7 @@ def main():
                 print "\nYou see a " + item.attrs['item'].upper()
                 print '\nTo pick up items, type (grab/take + item).'
                 command = get_command()
-                update_state(current_room, command)
+                update_state(current_room, command, P)
             return current_room
         else:
             print '\n\nNo items in here.'
@@ -108,15 +108,15 @@ def main():
                 room_dict[current_room].Mono = False
         return current_room
 
-    def pickUpItem(current_room):
+    def pickUpItem(current_room, P):
         global inv, gameAmmo
         items = room_dict[current_room].Items
         if items:
             for item in items:
                 new_item = item.attrs['item']
                 str_item = str(new_item)
-                # Player().addToInv(str_item, current_room)
-                inv[str_item] = current_room
+                P.addToInv(str_item, current_room)
+                # inv[str_item] = current_room
                 print '\n\n', item.ItemDes[0].value
                 print '\nYou picked up a(an) ' + str_item
                 if item.ItemArt:
@@ -144,7 +144,7 @@ def main():
         require = room_dict[new_room].Req
         if require:
             for item in require:
-                if item.attrs['item'] in inv.keys():
+                if item.attrs['item'] in P.inv.keys():
                     print '\n\nSince you have a(an) ' + item.attrs['item'] + ' you have access to this room.'
                     command = get_command()
                     verb, noun = parseCommand(command)
@@ -168,15 +168,15 @@ def main():
         else:
             return new_room
 
-    def inventory(current_room):
+    def inventory(current_room, P):
         global inv, health, points, gameAmmo
-        if inv == {}:
+        if P.inv == {}:
             print '\nYou don\'t have anything in your inventory.'
             time.sleep(1)
             return current_room
         else:
             print '\n**INVENTORY LIST**\n\t\t\t\tHEALTH:', health, '\tPOINTS:', points, '\t  AMMO:', gameAmmo
-            for i, item in enumerate(inv):
+            for i, item in enumerate(P.inv):
                 print i + 1, item + '\n'
             print '\nPress Tab to hide your inventory list.'
             command = get_command()
@@ -184,27 +184,27 @@ def main():
             if command in ['tab', 'i', 'I']:
                 return current_room
             elif verb in ['look', 'info', 'tell', 'view']:
-                for key in inv.keys():
+                for key in P.inv.keys():
                     if noun.lower() in [key.lower(), key.lower().split()[1]]:
-                        room = lookInventory(current_room, noun.lower())
+                        room = lookInventory(current_room, noun.lower(), P)
                         return room
             elif verb in ['use', 'Use', 'u', 'U']:
-                for key in inv.keys():
+                for key in P.inv.keys():
                     if noun.lower() in [key.lower(), key.lower().split()[1]]:
-                        room = useInventory(current_room, noun.lower())
+                        room = useInventory(current_room, noun.lower(), P)
                         return room
             else:
                 print 'Not a valid command.'
                 time.sleep(1)
                 os.system('CLS')
                 describe(room_dict[current_room])
-        return inventory(current_room)
+        return inventory(current_room, P)
 
-    def lookInventory(current_room, name):
+    def lookInventory(current_room, name, P):
         global inv
-        for key in inv.keys():
+        for key in P.inv.keys():
             if name in [key.lower(), key.lower().split()[1]]:
-                coord = inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key,'That\'s not in your backpack.')
                 item = itemRoomDict[coord].Items
                 des = item[0].ItemDes[0].value
                 print des
@@ -221,17 +221,17 @@ def main():
         else:
             print 'Unrecognized command...'
             time.sleep(1)
-            inventory(current_room)
+            inventory(current_room, P)
         return current_room
 
-    def useInventory(current_room, name):
+    def useInventory(current_room, name, P):
         global inv
-        for key in inv.keys():
+        for key in P.inv.keys():
             if (name == key or
                 name == key.lower() or
                 name == key.split()[1] or
                 name == key.lower().split()[1]):
-                coord = inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key,'That\'s not in your backpack.')
                 item = itemRoomDict[coord].Items
                 use = item[0].ItemUse
                 if use:
@@ -255,9 +255,9 @@ def main():
                     if item[0].ItemArt:
                         fileName = item[0].ItemArt[0].value
                         printASCII(fileName)
-                    for k in inv.keys():
+                    for k in P.inv.keys():
                         if k == item[0].attrs['item']:
-                            del inv[k]
+                            del P.inv[k]
                     print '\nPress Tab to return to game.'
                     command = get_command()
                     if command in ['tab', 'i', 'I']:
@@ -274,13 +274,13 @@ def main():
         os.system('CLS')
         return current_room
 
-    def useItem(current_room, noun):
+    def useItem(current_room, noun, P):
         global gun, gameAmmo, inv, gunDamage
-        for key in inv.keys():
+        for key in P.inv.keys():
             if (noun == key.lower() or
                 noun == key.split()[1] or
                 noun == key.lower().split()[1]):
-                coord = inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key,'That\'s not in your backpack.')
                 use = itemRoomDict[coord].Items[0].attrs['use']
                 if use == 'True':
                     damage = literal_eval(itemRoomDict[coord].Items[0].attrs['damage'])
@@ -299,13 +299,13 @@ def main():
                     os.system('CLS')
         return current_room
 
-    def putAwayItem(current_room, noun):
+    def putAwayItem(current_room, noun, P):
         global gun, gameAmmo, inv
-        for key in inv.keys():
+        for key in P.inv.keys():
             if (noun == key.lower() or
                 noun == key.split()[1] or
                 noun == key.lower().split()[1]):
-                coord = inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key,'That\'s not in your backpack.')
                 use = itemRoomDict[coord].Items[0].attrs['use']
                 if gun and use == 'True':
                     gun = False
@@ -320,10 +320,10 @@ def main():
                     os.system('CLS')
         return current_room
 
-    def shootGun(current_room):
+    def shootGun(current_room, P):
         global gameAmmo, gun, health
         if gun and gameAmmo > 0:
-            for key, value in inv.iteritems():
+            for key, value in P.inv.iteritems():
                 sound = itemRoomDict[value].Items[0].UseSound
                 if sound:
                     soundFile = sound[0].value
@@ -355,8 +355,8 @@ def main():
         sound = pygame.mixer.Sound(soundFile)
         sound.play()
 
-    def engage(current_room):
-        global inv, health, gameAmmo, points, gunDamage, gun
+    def engage(current_room, P):
+        global health, gameAmmo, points, gunDamage, gun
         mon = room_dict[current_room].Monster
         if mon:
             for item in mon:
@@ -374,7 +374,7 @@ def main():
                     print '\n\n', monName, 'Health:', monsterHealth
                     command = get_command()
                     if gun and command == 'shoot':
-                        shootGun(current_room)
+                        shootGun(current_room, P)
                         printASCII(monArt)
                         playSound(monSound)
                         print '\n\nYou shot the', monName, 'but he\'s still attacking you.'
@@ -397,8 +397,8 @@ def main():
                         time.sleep(1)
                         monsterHealth -= 1
                     elif command in ['tab', 'i', 'I']:
-                        inventory(current_room)
-                        engage(current_room)
+                        inventory(current_room, P)
+                        engage(current_room, P)
                     elif command != 'shoot' and command not in ['tab', 'i', 'I']:
                         print '\n\nDo something you\'re becoming', monName, 'food!!!'
                         time.sleep(1)
@@ -408,12 +408,12 @@ def main():
                     printASCII('Lose.txt')
                     playSound('zoombieWins.wav')
                     time.sleep(5)
-                    homeScreen()
+                    homeScreen(P)
                 return current_room
         else:
             return current_room
 
-    def play():
+    def play(P):
         # Where all the fun takes place!!
         os.system('CLS')
         current_coord = (0, 0)
@@ -421,8 +421,8 @@ def main():
             current_room = room_dict.get(current_coord)
             describe(current_room)
             command = get_command()
-            current_coord = update_state(current_coord, command)
-            current_coord = engage(current_coord)
+            current_coord = update_state(current_coord, command, P)
+            current_coord = engage(current_coord, P)
 
     def quitGame(current_room):
         global inv, health, points, gameAmmo, gun, gunDamage
@@ -434,7 +434,7 @@ def main():
             print '\n\nUntil Next Time...'
             time.sleep(1)
             os.system('CLS')
-            homeScreen()
+            homeScreen(P)
         elif command == 'tab':
             return current_room
         else:
@@ -494,7 +494,7 @@ def main():
                   80: "s",
                   81: 'shoot'}
 
-    def update_state(current_room, command):
+    def update_state(current_room, command, P):
         global inv, gun, gameAmmo, health, points
         verb, noun = parseCommand(command)
         if verb in ["go", 'g', 'G', 'GO', 'move', 'MOVE']:
@@ -539,9 +539,9 @@ def main():
         elif verb in ['take', 'grab', 'get']:       #todo lower case the input to avoid doing all the different checks for all the inputs.
             if hasattr(room_dict[current_room], "Items") and noun.lower() in [room_dict[current_room].Items[0].attrs['item'].lower(),
                                 room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
-                location = pickUpItem(current_room)
+                location = pickUpItem(current_room, P)
                 global inv
-                print '\nBackpack: ', inv.keys()
+                print '\nBackpack: ', P.inv.keys()
                 raw_input('\nPress Enter to continue...')
                 os.system('CLS')
                 return location
@@ -563,7 +563,7 @@ def main():
                 os.system('CLS')
             return current_room
         elif verb in ['tab', 'i', 'I']:
-            room = inventory(current_room)
+            room = inventory(current_room, P)
             os.system('CLS')
             return room
         elif verb == 'q':
@@ -572,13 +572,13 @@ def main():
             location = checkStat(current_room)
             return location
         elif verb in ['use', 'Use', 'u', 'U']:
-            location = useItem(current_room, noun)
+            location = useItem(current_room, noun, P)
             return location
         elif verb in ['hide', 'store']:
-            location = putAwayItem(current_room, noun)
+            location = putAwayItem(current_room, noun, P)
             return location
         elif verb == 'shoot':
-            location = shootGun(current_room)
+            location = shootGun(current_room, P)
             return location
         else:
             print '\nThat\'t not a command.'
@@ -607,7 +607,7 @@ def main():
             time.sleep(1)
         return current_room
 
-    homeScreen()
+    homeScreen(P)
 
 
 if __name__ == '__main__':
@@ -615,7 +615,7 @@ if __name__ == '__main__':
         main()
     except:
         exception_string = traceback.format_exc()
-        logger.write_line([exception_string])  # note that it's in a list!
+        logger.write_line([exception_string])
         print exception_string
 
 
