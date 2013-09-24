@@ -55,8 +55,6 @@ def main():
     verbs = {"go": "go", "g": "go", "walk": "go",
          "take": "take", "t": "take", "grab": "take"}
 
-
-
     def homeScreen():
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
@@ -83,7 +81,6 @@ def main():
                   'Please try again. \n\n'
             homeScreen()
 
-
     def lookForItems(current_room):
         items = room_dict[current_room].Items
         if items:
@@ -99,7 +96,6 @@ def main():
             os.system('CLS')
             return current_room
 
-
     def speak(current_room):
         for mono in room_dict[current_room].Mono:
             if mono:
@@ -111,7 +107,6 @@ def main():
                     time.sleep(1)
                 room_dict[current_room].Mono = False
         return current_room
-
 
     def pickUpItem(current_room):
         global inv, gameAmmo
@@ -140,7 +135,6 @@ def main():
             time.sleep(1)
             os.system('CLS')
             return current_room
-
 
     def req(new_room, current_room):
         """Checks to see if the room the player is trying to enter has a requirement.If so a message is printed and the
@@ -174,7 +168,6 @@ def main():
         else:
             return new_room
 
-
     def inventory(current_room):
         global inv, health, points, gameAmmo
         if inv == {}:
@@ -207,7 +200,6 @@ def main():
                 describe(room_dict[current_room])
         return inventory(current_room)
 
-
     def lookInventory(current_room, name):
         global inv
         for key in inv.keys():
@@ -231,7 +223,6 @@ def main():
             time.sleep(1)
             inventory(current_room)
         return current_room
-
 
     def useInventory(current_room, name):
         global inv
@@ -276,14 +267,12 @@ def main():
                     time.sleep(1)
         return current_room
 
-
     def checkStat(current_room):
         global health, points, gameAmmo
         print '\nHEALTH:', health, '\n\nPOINTS:', points, '\n\nAMMO:', gameAmmo
         raw_input('\nPress Enter to continue...')
         os.system('CLS')
         return current_room
-
 
     def useItem(current_room, noun):
         global gun, gameAmmo, inv, gunDamage
@@ -310,7 +299,6 @@ def main():
                     os.system('CLS')
         return current_room
 
-
     def putAwayItem(current_room, noun):
         global gun, gameAmmo, inv
         for key in inv.keys():
@@ -331,7 +319,6 @@ def main():
                     time.sleep(1)
                     os.system('CLS')
         return current_room
-
 
     def shootGun(current_room):
         global gameAmmo, gun, health
@@ -359,17 +346,14 @@ def main():
             os.system('CLS')
         return current_room
 
-
     def printASCII(fileName):
         with open(fileName) as fin:
             art = fin.read()
         print '\n', art
 
-
     def playSound(soundFile):
         sound = pygame.mixer.Sound(soundFile)
         sound.play()
-
 
     def engage(current_room):
         global inv, health, gameAmmo, points, gunDamage, gun
@@ -429,7 +413,6 @@ def main():
         else:
             return current_room
 
-
     def play():
         # Where all the fun takes place!!
         os.system('CLS')
@@ -440,7 +423,6 @@ def main():
             command = get_command()
             current_coord = update_state(current_coord, command)
             current_coord = engage(current_coord)
-
 
     def quitGame(current_room):
         global inv, health, points, gameAmmo, gun, gunDamage
@@ -459,7 +441,6 @@ def main():
             print 'That\'s not a valid command.'
             time.sleep(1)
 
-
     def saveGame(current_room):
         # currentLocation = room_dict[current_room]
         fileName = raw_input("Enter you name: ")
@@ -468,7 +449,6 @@ def main():
             fout.write(gameInfo)
         print "Your game has been saved,", fileName
         return current_room
-
 
     def describe(current_room):
         print current_room.Des[0].value
@@ -508,13 +488,11 @@ def main():
                 cmd += chr(key)
         return cmd
 
-
     arrow_keys = {72: "n",
                   77: "e",
                   75: "w",
                   80: "s",
                   81: 'shoot'}
-
 
     def update_state(current_room, command):
         global inv, gun, gameAmmo, health, points
@@ -608,14 +586,12 @@ def main():
             os.system('CLS')
         return current_room
 
-
     def parseCommand(command):
         command = single_word_commands.get(command, command)
         words = command.split()
         verb = words[0]
         noun = " ".join(words[1:])
         return verb, noun
-
 
     def exits(new_room, current_room):
         """Checks to see the available exits of a room are. These exits are retrieved from the XML game map under
@@ -639,7 +615,7 @@ if __name__ == '__main__':
         main()
     except:
         exception_string = traceback.format_exc()
-        logger.write_line([exception_string])  # note that it?s in a list!
+        logger.write_line([exception_string])  # note that it's in a list!
         print exception_string
 
 
