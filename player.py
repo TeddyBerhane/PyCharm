@@ -17,8 +17,9 @@ class Player(object):
         return self.health
 
     def increaseHealth(self, amount):
-        self.health += amount
-        return self.health
+        if self.health < 100:
+            self.health = min((self.health + amount), 100)
+            return self.health
 
     def increasePoints(self, amount):
         self.points += amount
