@@ -13,7 +13,6 @@ class Player(object):
 
     def decreaseHealth(self, amount):
         self.health -= amount
-        return self.health
 
     def increaseHealth(self, amount):
         if self.health < 100:
@@ -34,8 +33,6 @@ class Player(object):
 
     def useGun(self):
         self.gun = True
-        return True
 
     def putUpGun(self):
         self.gun = False
-        return False
