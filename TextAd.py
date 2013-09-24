@@ -6,13 +6,13 @@ import time, os, sys, pygame.mixer
 
 pygame.mixer.init()
 
-# global inv, health, points, gameAmmo, gun, gunDamage
-# inv = {}
-# health = 75
-# points = 0
-# gameAmmo = 0
-# gun = False
-# gunDamage = 0
+global inv, health, points, gameAmmo, gun, gunDamage
+inv = {}
+health = 75
+points = 0
+gameAmmo = 0
+gun = False
+gunDamage = 0
 # Open and parse XML game map
 
 with open('game.xml', 'r') as fin:
