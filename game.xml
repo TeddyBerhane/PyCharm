@@ -50,9 +50,9 @@
         </Des>
         <Req item = 'Flash Light'>
             <ReqMes>It's way to dark to go up there!!</ReqMes>
-            <ReqSound>steps.wav</ReqSound>
         </Req>
         <Art>stairs.txt</Art>
+        <Sound>steps.wav</Sound>
         <Event>None</Event>
         <Exit>(0,1)</Exit>
         <Exit>(-1,2)</Exit>
@@ -253,6 +253,8 @@
         <Des>
             Roof access is available in this room. But the roof is really high!
             Where to?
+
+                Exit is to the
         </Des>
         <Items item = 'Hand Grenade' healthValue = "0" damage = "100" use = 'True'>
             <ItemDes>You find a hand grenade.</ItemDes>
@@ -281,7 +283,6 @@
     <Room coord = '(-3, 4)'>
         <Des>
             You're standing under the hovering helicopter.
-
         </Des>
         <Monster name = 'Zombie' damage = '30' health = '100' experience = '50'>
             <MonsterDes>
