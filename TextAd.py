@@ -6,11 +6,9 @@ import time, os, sys, pygame.mixer
 from Q2API.util import logging
 import traceback
 pygame.mixer.init()
-logger = logging.out_file_instance('Zombie Raid')
 
 
 def main():
-
     # Open and parse XML game map
 
     with open('game.xml', 'r') as fin:
@@ -300,8 +298,7 @@ def main():
                 sound = itemRoomDict[value].Items[0].UseSound
                 if sound:
                     soundFile = sound[0].value
-                    sound = pygame.mixer.Sound(soundFile)
-                    sound.play()
+                    playSound(soundFile)
                     P.decreaseAmmo()
                     print '\n\nRemaining Rounds:', P.ammo
                     time.sleep(1)
@@ -367,7 +364,7 @@ def main():
                         playSound(monSound)
                         P.decreaseHealth(monDamage)
                         time.sleep(1)
-                        monsterHealth -= 1
+                        monsterHealth -= 10
                     elif command in ['tab', 'i', 'I']:
                         inventory(current_room, P)
                         engage(current_room, P)
@@ -380,6 +377,7 @@ def main():
                     printASCII('Lose.txt')
                     playSound('zoombieWins.wav')
                     time.sleep(5)
+                    os.system('CLS')
                     homeScreen()
                 return current_room
         else:
@@ -394,6 +392,7 @@ def main():
             describe(current_room)
             command = get_command()
             current_coord = update_state(current_coord, command, P)
+            pygame.mixer.stop()
             current_coord = engage(current_coord, P)
 
     def quitGame(current_room):
@@ -427,8 +426,17 @@ def main():
             if art:
                 fileName = current_room.Art[0].value
                 printASCII(fileName)
+        for sound in current_room.Sound:
+                if sound:
+                    soundFile = current_room.Sound[0].value
+                    playSound(soundFile)
+        for exits in current_room.Exit:
+            if exits.value == 'Winner':
+                time.sleep(10)
+                os.system('CLS')
+                homeScreen()
         print '\n\nPress TAB or ("I" + Enter) to view your inventory.'
-        print '\n\nWould you like to look around this room? Press ("L" + Enter) to look.'
+        print '\n\nWould you like to look around? Press ("L" + Enter) to look.'
 
     def get_command():
         """Uses the msvcrt module to get key codes from buttons pressed to navigate through the game. The arrows,
@@ -580,7 +588,7 @@ def main():
 
     homeScreen()
 
-
+logger = logging.out_file_instance('Zombie Raid')
 if __name__ == '__main__':
     try:
         main()
