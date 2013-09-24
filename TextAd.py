@@ -10,14 +10,7 @@ logger = logging.out_file_instance('Zombie Raid')
 
 
 def main():
-    
-    P = Player()
-    global  health, points, gameAmmo, gun, gunDamage
-    health = 75
-    points = 0
-    gameAmmo = 0
-    gun = False
-    gunDamage = 0
+
     # Open and parse XML game map
 
     with open('game.xml', 'r') as fin:
@@ -46,30 +39,24 @@ def main():
         itemRoomDict[tupCoord] = room
 
     single_word_commands = {"n": "go north",
-                        "e": "go east",
-                        "s": "go south",
-                        "w": "go west",
-                        "l": "look around",
-                        "": "BAD_COMMAND"}
+                            "e": "go east",
+                            "s": "go south",
+                            "w": "go west",
+                            "l": "look around",
+                            "": "BAD_COMMAND"}
 
     verbs = {"go": "go", "g": "go", "walk": "go",
             "take": "take", "t": "take", "grab": "take"}
 
-    def homeScreen(P):
+    def homeScreen():
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
-        global inv, health, points, gameAmmo, gun, gunDamage
         intro = room_dict[(100, 100)].Des[0].value
         printASCII(intro)
         command = ord(getch())
         if command == 13:
             os.system('CLS')
-            inv = {}
-            health = 75
-            points = 0
-            gameAmmo = 0
-            gun = False
-            gunDamage = 0
+            P = Player()
             play(P)
         elif command == 27:
             print '\n\n\t\t\t\t\tGood Bye!'
@@ -79,9 +66,9 @@ def main():
             os.system('CLS')
             print '\n\n\n\tI don\'t understand your command. Please press ENTER to play, or ESC to exit. ' \
                   'Please try again. \n\n'
-            homeScreen(P)
+            homeScreen()
 
-    def lookForItems(current_room):
+    def lookForItems(current_room, P):
         items = room_dict[current_room].Items
         if items:
             for item in items:
@@ -109,14 +96,12 @@ def main():
         return current_room
 
     def pickUpItem(current_room, P):
-        global inv, gameAmmo
         items = room_dict[current_room].Items
         if items:
             for item in items:
                 new_item = item.attrs['item']
                 str_item = str(new_item)
                 P.addToInv(str_item, current_room)
-                # inv[str_item] = current_room
                 print '\n\n', item.ItemDes[0].value
                 print '\nYou picked up a(an) ' + str_item
                 if item.ItemArt:
@@ -127,7 +112,7 @@ def main():
                     playSound(soundFile)
                 if item.Ammo:
                     ammo = literal_eval(item.Ammo[0].value)
-                    gameAmmo += ammo
+                    P.increaseAmmo(ammo)
                 del room_dict[current_room].Items[0]
             return current_room
         else:
@@ -136,7 +121,7 @@ def main():
             os.system('CLS')
             return current_room
 
-    def req(new_room, current_room):
+    def req(new_room, current_room, P):
         """Checks to see if the room the player is trying to enter has a requirement.If so a message is printed and the
         location of the play stays the same, otherwise the player can proceed into the the room. This is retrieved from
         the XML game map tag 'Req' """
@@ -169,13 +154,12 @@ def main():
             return new_room
 
     def inventory(current_room, P):
-        global inv, health, points, gameAmmo
         if P.inv == {}:
             print '\nYou don\'t have anything in your inventory.'
             time.sleep(1)
             return current_room
         else:
-            print '\n**INVENTORY LIST**\n\t\t\t\tHEALTH:', health, '\tPOINTS:', points, '\t  AMMO:', gameAmmo
+            print '\n**INVENTORY LIST**\n\t\t\t\tHEALTH:', P.health, '\tPOINTS:', P.points, '\t  AMMO:', P.ammo
             for i, item in enumerate(P.inv):
                 print i + 1, item + '\n'
             print '\nPress Tab to hide your inventory list.'
@@ -201,10 +185,9 @@ def main():
         return inventory(current_room, P)
 
     def lookInventory(current_room, name, P):
-        global inv
         for key in P.inv.keys():
             if name in [key.lower(), key.lower().split()[1]]:
-                coord = P.inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key, 'That\'s not in your backpack.')
                 item = itemRoomDict[coord].Items
                 des = item[0].ItemDes[0].value
                 print des
@@ -225,7 +208,6 @@ def main():
         return current_room
 
     def useInventory(current_room, name, P):
-        global inv
         for key in P.inv.keys():
             if (name == key or
                 name == key.lower() or
@@ -243,15 +225,10 @@ def main():
                         '\nYou have gained', intExpValue, 'points.'
                     use = item[0].ItemUse
                     print use[0].value
-                    global health
-                    global points
-                    if (health + intHealthValue) >= 100:
-                        health = 100
-                    else:
-                        health += intHealthValue
-                    points += intExpValue
-                    print '\n\n\nHealth:', health
-                    print '\nExperience:', points
+                    P.increaseHealth(intHealthValue)
+                    P.increasePoints(intExpValue)
+                    print '\n\n\nHealth:', P.health
+                    print '\nPoints:', P.points
                     if item[0].ItemArt:
                         fileName = item[0].ItemArt[0].value
                         printASCII(fileName)
@@ -267,15 +244,13 @@ def main():
                     time.sleep(1)
         return current_room
 
-    def checkStat(current_room):
-        global health, points, gameAmmo
-        print '\nHEALTH:', health, '\n\nPOINTS:', points, '\n\nAMMO:', gameAmmo
+    def checkStat(current_room, P):
+        print '\nHEALTH:', P.health, '\n\nPOINTS:', P.points, '\n\nAMMO:', P.ammo
         raw_input('\nPress Enter to continue...')
         os.system('CLS')
         return current_room
 
     def useItem(current_room, noun, P):
-        global gun, gameAmmo, inv, gunDamage
         for key in P.inv.keys():
             if (noun == key.lower() or
                 noun == key.split()[1] or
@@ -284,12 +259,12 @@ def main():
                 use = itemRoomDict[coord].Items[0].attrs['use']
                 if use == 'True':
                     damage = literal_eval(itemRoomDict[coord].Items[0].attrs['damage'])
-                    gunDamage = damage
-                    print '***Your', key, 'is enabled, and ready for use.***' \
-                    '\n\nYou have', gameAmmo, 'rounds left to use.' \
+                    P.addToGunDamage(damage)
+                    print '\n\n***Your', key, 'is enabled, and ready for use.***' \
+                    '\n\nYou have', P.ammo, 'rounds left to use.' \
                     '\n\nTo fire', key, 'Press the PAGE DOWN button.' \
                     '\nYou can put away the', key, 'by typing (hide +', key, ')'
-                    gun = True
+                    P.useGun()
                     raw_input('\n\nPress Enter to continue...')
                     os.system('CLS')
                     return current_room
@@ -300,16 +275,15 @@ def main():
         return current_room
 
     def putAwayItem(current_room, noun, P):
-        global gun, gameAmmo, inv
         for key in P.inv.keys():
             if (noun == key.lower() or
                 noun == key.split()[1] or
                 noun == key.lower().split()[1]):
-                coord = P.inv.get(key,'That\'s not in your backpack.')
+                coord = P.inv.get(key, 'That\'s not in your backpack.')
                 use = itemRoomDict[coord].Items[0].attrs['use']
-                if gun and use == 'True':
-                    gun = False
-                    itemRoomDict[coord].Items[0].attrs['ammo'] = str(gameAmmo)
+                if P.gun and use == 'True':
+                    P.gun = False
+                    itemRoomDict[coord].Items[0].attrs['ammo'] = str(P.ammo)
                     print '\n\nYou have put the', key, 'away.'
                     time.sleep(1)
                     os.system('CLS')
@@ -321,27 +295,26 @@ def main():
         return current_room
 
     def shootGun(current_room, P):
-        global gameAmmo, gun, health
-        if gun and gameAmmo > 0:
+        if P.gun and P.ammo > 0:
             for key, value in P.inv.iteritems():
                 sound = itemRoomDict[value].Items[0].UseSound
                 if sound:
                     soundFile = sound[0].value
                     sound = pygame.mixer.Sound(soundFile)
                     sound.play()
-                    gameAmmo -= 1
-                    print '\n\nRemaining Rounds:', gameAmmo
+                    P.decreaseAmmo()
+                    print '\n\nRemaining Rounds:', P.ammo
                     time.sleep(1)
                     os.system('CLS')
                     return current_room
-        elif gun and gameAmmo <= 0:
+        elif P.gun and P.ammo <= 0:
             print 'You\'re out of ammo!!'
             time.sleep(1)
             os.system('CLS')
             return current_room
         else:
             print '\n\nPunching the air is not going to help you out...'
-            health -= 1
+            P.health -= 1
             time.sleep(1)
             os.system('CLS')
         return current_room
@@ -356,7 +329,6 @@ def main():
         sound.play()
 
     def engage(current_room, P):
-        global health, gameAmmo, points, gunDamage, gun
         mon = room_dict[current_room].Monster
         if mon:
             for item in mon:
@@ -365,35 +337,35 @@ def main():
                 monName = item.attrs['name']
                 monDamage = literal_eval(item.attrs['damage'])
                 monHealth = literal_eval(item.attrs['health'])
-                monPoints = literal_eval(item.attrs['points'])
+                monPoints = literal_eval(item.attrs['experience'])
                 monSound = item.MonsterAttack[0].value
                 monArt = item.MonsterArt[0].value
                 monsterHealth = monHealth
-                while health > 0:
-                    print '\n\nYour Health:', health
+                while P.health > 0:
+                    print '\n\nYour Health:', P.health
                     print '\n\n', monName, 'Health:', monsterHealth
                     command = get_command()
-                    if gun and command == 'shoot':
+                    if P.gun and command == 'shoot':
                         shootGun(current_room, P)
                         printASCII(monArt)
                         playSound(monSound)
                         print '\n\nYou shot the', monName, 'but he\'s still attacking you.'
-                        health -= monDamage
-                        monsterHealth -= gunDamage
+                        P.decreaseHealth(monDamage)
+                        monsterHealth -= P.gunDamage
                     if monsterHealth <= 0:
-                        points += monPoints
+                        P.increasePoints(monPoints)
                         print '\n\nYou have defeated the', monName, '!! \n\n You have gained,', monPoints, 'points:'
-                        if health < 30:
+                        if P.health < 30:
                             print '\n\nWhoa!! That was close. You should look for fix your self up!'
                         raw_input('\n\nPress Enter Champ! ')
                         room_dict[current_room].Monster = False
                         os.system('CLS')
                         return current_room
-                    elif not gun and command == 'shoot':
+                    elif not P.gun and command == 'shoot':
                         print '\n\nYou punched the', monName, '!!'
                         printASCII(monArt)
                         playSound(monSound)
-                        health -= monDamage
+                        P.decreaseHealth(monDamage)
                         time.sleep(1)
                         monsterHealth -= 1
                     elif command in ['tab', 'i', 'I']:
@@ -402,13 +374,13 @@ def main():
                     elif command != 'shoot' and command not in ['tab', 'i', 'I']:
                         print '\n\nDo something you\'re becoming', monName, 'food!!!'
                         time.sleep(1)
-                        health -= monDamage
+                        P.decreaseHealth(monDamage)
                 else:
                     print '\n\nYou gave it a good run, but your limbs were devoured by the', monName, '.'
                     printASCII('Lose.txt')
                     playSound('zoombieWins.wav')
                     time.sleep(5)
-                    homeScreen(P)
+                    homeScreen()
                 return current_room
         else:
             return current_room
@@ -425,7 +397,6 @@ def main():
             current_coord = engage(current_coord, P)
 
     def quitGame(current_room):
-        global inv, health, points, gameAmmo, gun, gunDamage
         print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO.'
         command = get_command()
         if command in ['y', 'yes', 'YES', 'Yes']:
@@ -434,7 +405,7 @@ def main():
             print '\n\nUntil Next Time...'
             time.sleep(1)
             os.system('CLS')
-            homeScreen(P)
+            homeScreen()
         elif command == 'tab':
             return current_room
         else:
@@ -495,31 +466,30 @@ def main():
                   81: 'shoot'}
 
     def update_state(current_room, command, P):
-        global inv, gun, gameAmmo, health, points
         verb, noun = parseCommand(command)
         if verb in ["go", 'g', 'G', 'GO', 'move', 'MOVE']:
             if noun in ['n', 'north', "N", "NORTH", 'up', 'UP']:
                 new_room = (current_room[0], current_room[1] + 1)
                 checked_room = exits(new_room, current_room)
-                check_req = req(checked_room, current_room)
+                check_req = req(checked_room, current_room, P)
                 os.system('CLS')
                 return check_req
             elif noun in ['e', 'east', 'E', 'EAST']:
                 new_room = (current_room[0] + 1, current_room[1])
                 checked_room = exits(new_room, current_room)
-                check_req = req(checked_room, current_room)
+                check_req = req(checked_room, current_room, P)
                 os.system('CLS')
                 return check_req
             elif noun in ['w', 'west', 'W', 'WEST']:
                 new_room = (current_room[0] - 1, current_room[1])
                 checked_room = exits(new_room, current_room)
-                check_req = req(checked_room, current_room)
+                check_req = req(checked_room, current_room, P)
                 os.system('CLS')
                 return check_req
             elif noun in ['s', 'south', 'S', 'SOUTH', 'down', 'DOWN']:
                 new_room = (current_room[0], current_room[1] - 1)
                 checked_room = exits(new_room, current_room)
-                check_req = req(checked_room, current_room)
+                check_req = req(checked_room, current_room, P)
                 os.system('CLS')
                 return check_req
             elif noun in ['', ' ']:
@@ -529,7 +499,7 @@ def main():
                 return current_room
         elif verb in ['look', 'l', 'Look', 'L', 'LOOK', 'see']:
             if hasattr(room_dict[current_room], "Items") and noun in ['around', 'room', '', ' ']:
-                room = lookForItems(current_room)
+                room = lookForItems(current_room, P)
                 return room
             else:
                 print '\nThere arn\'t any items in here..'
@@ -537,10 +507,10 @@ def main():
                 os.system('CLS')
             return current_room
         elif verb in ['take', 'grab', 'get']:       #todo lower case the input to avoid doing all the different checks for all the inputs.
-            if hasattr(room_dict[current_room], "Items") and noun.lower() in [room_dict[current_room].Items[0].attrs['item'].lower(),
-                                room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
+            if hasattr(room_dict[current_room], "Items") and noun.lower() in \
+                    [room_dict[current_room].Items[0].attrs['item'].lower(),
+                     room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
                 location = pickUpItem(current_room, P)
-                global inv
                 print '\nBackpack: ', P.inv.keys()
                 raw_input('\nPress Enter to continue...')
                 os.system('CLS')
@@ -551,8 +521,9 @@ def main():
                 os.system('CLS')
             return current_room
         elif room_dict[current_room].Mono and verb in ['talk', 't', 'speak']:
-            if hasattr(room_dict[current_room], "Mono") and noun.lower() in [room_dict[current_room].Mono[0].attrs['person'].lower(),
-                              room_dict[current_room].Mono[0].attrs['person'].lower().split()[1]]:
+            if hasattr(room_dict[current_room], "Mono") and noun.lower() in \
+                    [room_dict[current_room].Mono[0].attrs['person'].lower(),
+                     room_dict[current_room].Mono[0].attrs['person'].lower().split()[1]]:
                 room = speak(current_room)
                 raw_input('Press Enter to continue...')
                 os.system('CLS')
@@ -569,7 +540,7 @@ def main():
         elif verb == 'q':
             quitGame(current_room)
         elif verb in ['stat', 'health']:
-            location = checkStat(current_room)
+            location = checkStat(current_room, P)
             return location
         elif verb in ['use', 'Use', 'u', 'U']:
             location = useItem(current_room, noun, P)
@@ -607,7 +578,7 @@ def main():
             time.sleep(1)
         return current_room
 
-    homeScreen(P)
+    homeScreen()
 
 
 if __name__ == '__main__':
@@ -617,11 +588,3 @@ if __name__ == '__main__':
         exception_string = traceback.format_exc()
         logger.write_line([exception_string])
         print exception_string
-
-
-
-
-# room = room_dict[(0, 2)]
-# del new_room[0]
-# print type(room.Items)
-# print room_dict[(0, 2)].flatten_self()
