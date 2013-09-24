@@ -238,7 +238,7 @@ def useInventory(current_room, name):
                 print use[0].value
                 global health
                 global points
-                if health >= 100:
+                if (health + intHealthValue) >= 100:
                     health = 100
                 else:
                     health += intHealthValue
