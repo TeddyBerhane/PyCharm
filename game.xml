@@ -1,0 +1,256 @@
+<Building>
+    <Room coord = '(100, 100)'>
+        <Des>Home.txt</Des>
+        <Event>None</Event>
+        <Exit>(0,1)</Exit>
+    </Room>
+
+    <Room coord = '(0, 0)'>
+        <Des>
+            You are outside of a deserted building.
+            The zombies are on your trail.
+
+            The entrance is to your NORTH.
+        </Des>
+        <Event>None</Event>
+        <Exit>(0,1)</Exit>
+    </Room>
+
+    <Room coord = '(0, 1)'>
+        <Des>
+            You are inside the lobby of the deserted building.
+                There is a room to your NORTH.
+                Stairs to your WEST.
+                Another room to your EAST.
+
+                The exit is to your SOUTH.
+
+            Where to?
+        </Des>
+        <Items item = 'Flash Light' healthValue = "0" expValue = "10" use = 'False'>
+            <ItemDes>You find a flashlight. Definitely a good find for this dark place.</ItemDes>
+            <ItemArt>flashlight.txt</ItemArt>
+        </Items>
+        <Event>None</Event>
+        <Exit>(0,0)</Exit>
+        <Exit>(0,2)</Exit>
+        <Exit>(-1,1)</Exit>
+        <Exit>(1,1)</Exit>
+
+    </Room>
+
+    <Room coord = '(-1, 1)'>
+        <Des>
+            You are in front of the stairs on the first floor of the building.
+            The power is out and the stairs are very dark.
+                The lobby is to your EAST.
+                You can proceed NORTH up the stairs.
+
+            Where to?
+        </Des>
+        <Req item = 'Flash Light'>
+            <ReqMes>It's way to dark to go up there!!</ReqMes>
+        </Req>
+        <Art>stairs.txt</Art>
+        <Event>None</Event>
+        <Exit>(0,1)</Exit>
+        <Exit>(-1,2)</Exit>
+
+    </Room>
+
+    <Room coord = '(0, 2)'>
+        <Des>
+            This room smells terrible!!
+
+                There is a an old man that's in bad condition in this room.
+
+                The exit is to your SOUTH.
+            Where to?
+
+        </Des>
+        <Mono person = 'Old Man'>
+            You slowly approach the old man.
+
+            He slowly opens his mouth and says:
+
+            Old man: 'You are lucky to still be alive young man.'
+
+            You: 'How did this happen to you?'
+
+            Old man: 'I'm the janitor for the building, I was attacked by zombies.'
+
+            You: 'Are you going to be okay?'
+
+            Old man: 'Don't worry about me, save your self.
+            My key should be around here somewhere. I dropped it when I was being
+            attacked. It will give you access to some locked doors.'
+
+            You: 'Thank...'
+
+            Before you get a chance to thank the old man, he's dead.
+        </Mono>
+        <Event>None</Event>
+        <Items item = 'Silver Key' healthValue = "0" expValue = "2" use = 'False'>
+            <ItemDes>You find a small, shiny, silver key on the ground.</ItemDes>
+            <ItemArt>key.txt </ItemArt>
+        </Items>
+        <Exit>(0,1)</Exit>
+    </Room>
+
+    <Room coord = '(1, 1)'>
+        <Des>
+            There is a constant drip of water coming down from the ceiling in this room.
+            There are some footstep around the room. Maybe someone has been here....
+
+            You notice a door to your NORTH.
+
+                The exit is to your WEST.
+
+            Where to?
+        </Des>
+        <Event>None</Event>
+        <Items item = 'Shot Gun' healthValue = "0" damage = "10" use = 'True'>
+            <ItemDes>You find a 12 gauge shot gun leaning against one of the corners of the room.</ItemDes>
+            <ItemArt>shotgun.txt</ItemArt>
+            <ItemSound>gun.wav</ItemSound>
+            <UseSound>gunUse.wav</UseSound>
+            <Ammo>15</Ammo>
+        </Items>
+        <Exit>(1,2)</Exit>
+        <Exit>(0,1)</Exit>
+
+    </Room>
+
+    <Room coord = '(1, 2)'>
+        <Des>
+        There is a radio transmitter in this room and you listen to a message filled
+        with static, but you can't make out the message.
+
+        You see a doorway to the EAST.
+
+        The exit is to your SOUTH.
+
+                Where to?
+        </Des>
+        <Event>None</Event>
+        <Items item = 'Two-Way Radio' healthValue = "0" expValue = "20" use = 'False'>
+            <ItemDes>Man on radio: "If there are any survivors in the building,
+                there is an air lift coming in 5 minutes! We'll be on the roof of this building."</ItemDes>
+            <ItemArt>radio.txt</ItemArt>
+            <ItemSound>radio.wav</ItemSound>
+        </Items>
+        <Req item = 'Silver Key'>
+            <ReqMes>The door to this room is locked! Maybe you can find a key...</ReqMes>
+            <ReqSound>door.wav</ReqSound>
+        </Req>
+        <Exit>(1,1)</Exit>
+        <Exit>(2,2)</Exit>
+
+    </Room>
+    <Room coord = '(2, 2)'>
+        <Des>
+         You're in a restroom.
+
+         The exit is to your WEST.
+
+                Where to?
+        </Des>
+        <Items item = 'First Aid' healthValue = '40' expValue = '0' use = 'False'>
+            <ItemDes>You find a First Aid Kit.</ItemDes>
+            <ItemArt>firstaid.txt</ItemArt>
+            <ItemUse>
+                You use this First Aid Kit to treat your injuries.
+            </ItemUse>
+        </Items>
+        <Exit>(1,2)</Exit>
+    </Room>
+
+    <Room coord = '(-1, 2)'>
+        <Des>
+            You are on the second floor of the building.
+            There is a dimly lit hallway to your WEST.
+
+                The stairs are to your SOUTH.
+
+            Where to?
+        </Des>
+        <Event>None</Event>
+        <Exit>(-2,2)</Exit>
+        <Exit>(-1,1)</Exit>
+    </Room>
+
+    <Room coord = '(-2, 2)'>
+        <Des>
+            You are in the dim second floor hallway. You notice 3 locks in the hallway.
+
+                One to your NORTH
+                One to your SOUTH
+                One to your WEST
+
+                The stairs are to your EAST
+
+            Where to?
+        </Des>
+        <Event>None</Event>
+        <Exit>(-2,3)</Exit>
+        <Exit>(-2,1)</Exit>
+        <Exit>(-3,2)</Exit>
+        <Exit>(-1,2)</Exit>
+    </Room>
+
+    <Room coord = '(-2, 3)'>
+        <Des>
+            You find your self in a dark room. You take a look outside the window and you see
+            the zombies. You're running out of time!
+
+                The exit is to your SOUTH.
+
+            Where to?
+        </Des>
+        <Event>None</Event>
+        <Exit>(-2,2)</Exit>
+
+    </Room>
+
+    <Room coord = '(-2, 1)'>
+        <Des>
+            The window to this room is shattered. That's how the zombies are getting in.
+            You need to get out of here!!
+
+                Exit is to the NORTH.
+
+            Where to?
+        </Des>
+        <Items item = 'Step Ladder' healthValue = '0' expValue = '0' use = 'False'>
+            <ItemDes>A step ladder. This could come in handy. </ItemDes>
+            <ItemArt>ladder.txt</ItemArt>
+        </Items>
+        <Monster name = 'Zombie' damage = '10' health = '50' experience = '50'>
+            <MonsterDes>
+                You are cornered by a zombie!!
+            </MonsterDes>
+            <MonsterAttack>ZombieAttack.wav</MonsterAttack>
+            <MonsterArt>zombie.txt</MonsterArt>
+        </Monster>
+        <Event>None</Event>
+        <Exit>(-2,2)</Exit>
+    </Room>
+    <Room coord = '(-3, 2)'>
+        <Des>
+            Roof access is available in this room. But you need a ladder.
+
+            Where to?
+        </Des>
+        <Event>None</Event>
+        <Exit>(-2,2)</Exit>
+    </Room>
+    <Room coord = '(-3, 3)'>
+        <Des>
+            You are on the roof of the building. There is a helicopter hovering over the roof.
+            You need to get on that helicopter!!
+
+        </Des>
+        <Event>None</Event>
+        <Exit>(-3,2)</Exit>
+    </Room>
+</Building>
