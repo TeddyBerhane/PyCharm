@@ -1,7 +1,8 @@
 class Player(object):
     def __init__(self):
-        self.coord = tuple
+        self.coord = (0, 0)
         self.health = 75
+        self.monster = []
         self.inv = {}
         self.ammo = 0
         self.points = 0
