@@ -4,13 +4,13 @@ from player import Player
 from msvcrt import getch, putch
 import time, os, sys, pygame.mixer
 from Q2API.util import logging
-import traceback
+import traceback, pickle
 pygame.mixer.init()
 
 
 def main():
     # Open and parse XML game map
-
+    global gameXml
     with open('game.xml', 'r') as fin:
         xml_file = fin.read()
     gameXml = wrap(xml_file)
@@ -50,12 +50,18 @@ def main():
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
         intro = room_dict[(100, 100)].Des[0].value
+        sound = room_dict[(100, 100)].Sound[0].value
         printASCII(intro)
+        playSound(sound)
         command = ord(getch())
         if command == 13:
             os.system('CLS')
             P = Player()
+            pygame.mixer.stop()
             play(P)
+        elif command == 9:
+            os.system('CLS')
+            loadGame()
         elif command == 27:
             print '\n\n\t\t\t\t\tGood Bye!'
             time.sleep(2)
@@ -68,7 +74,8 @@ def main():
 
     def lookForItems(current_room, P):
         items = room_dict[current_room].Items
-        if items:
+        available = items[0].attrs['available']
+        if items and available == 'Y':
             for item in items:
                 print "\nYou see a " + item.attrs['item'].upper()
                 print '\nTo pick up items, type (grab/take + item).'
@@ -90,12 +97,13 @@ def main():
                 for line in words:
                     print line
                     time.sleep(1)
-                room_dict[current_room].Mono = False
+                mono.attrs['available'] = 'N'
         return current_room
 
     def pickUpItem(current_room, P):
         items = room_dict[current_room].Items
-        if items:
+        available = items[0].attrs['available']
+        if items and available == 'Y':
             for item in items:
                 new_item = item.attrs['item']
                 str_item = str(new_item)
@@ -111,7 +119,7 @@ def main():
                 if item.Ammo:
                     ammo = literal_eval(item.Ammo[0].value)
                     P.increaseAmmo(ammo)
-                del room_dict[current_room].Items[0]
+                item.attrs['available'] = 'N'
             return current_room
         else:
             print '\n\nThere are not any items to pick up.'
@@ -123,22 +131,22 @@ def main():
         """Checks to see if the room the player is trying to enter has a requirement.If so a message is printed and the
         location of the play stays the same, otherwise the player can proceed into the the room. This is retrieved from
         the XML game map tag 'Req' """
-
         require = room_dict[new_room].Req
-        if require:
+        available = require[0].attrs['available']
+        if require and available == 'Y':
             for item in require:
                 if item.attrs['item'] in P.inv.keys():
                     print '\n\nSince you have a(an) ' + item.attrs['item'] + ' you have access to this room.'
                     command = get_command()
                     verb, noun = parseCommand(command)
                     if verb in ['use', 'Use', 'USE', 'u', 'U'] and (noun == item.attrs['item'] or
-                    noun == item.attrs['item'].lower() or noun == item.attrs['item'].split()[1] or
+                    noun == item.attrs['item'].lower() or noun == item.attrs['item'].split()[1] or  #todo lower case the input to avoid doing all the different checks for all the inputs.
                     noun == item.attrs['item'].lower().split()[1]):
                         if item.ReqSound:
                             soundFile = item.ReqSound[0].value
                             sound = pygame.mixer.Sound(soundFile)
                             sound.play()
-                        room_dict[new_room].Req = False
+                        item.attrs['available'] = 'N'
                         return new_room
                     else:
                         print 'Clearly, you can\'t use that here!!.'
@@ -317,17 +325,18 @@ def main():
         return current_room
 
     def printASCII(fileName):
-        with open(fileName) as fin:
+        with open('Art\\' + fileName) as fin:
             art = fin.read()
         print '\n', art
 
     def playSound(soundFile):
-        sound = pygame.mixer.Sound(soundFile)
+        sound = pygame.mixer.Sound('Sounds\\' + soundFile)
         sound.play()
 
     def engage(current_room, P):
         mon = room_dict[current_room].Monster
-        if mon:
+        available = mon[0].attrs['available']
+        if mon and available == 'Y':
             for item in mon:
                 monDes = item.MonsterDes[0].value
                 print monDes, '\n\nUse your weapon to fight back!!'
@@ -337,8 +346,11 @@ def main():
                 monPoints = literal_eval(item.attrs['experience'])
                 monSound = item.MonsterAttack[0].value
                 monArt = item.MonsterArt[0].value
+                battleMusic = item.BattleMusic[0].value
                 monsterHealth = monHealth
                 while P.health > 0:
+                    playSound(battleMusic)
+                    playSound('heartbeat.wav')
                     print '\n\nYour Health:', P.health
                     print '\n\n', monName, 'Health:', monsterHealth
                     command = get_command()
@@ -355,7 +367,9 @@ def main():
                         if P.health < 30:
                             print '\n\nWhoa!! That was close. You should look for fix your self up!'
                         raw_input('\n\nPress Enter Champ! ')
-                        room_dict[current_room].Monster = False
+                        P.monster.append(current_room)
+                        pygame.mixer.fadeout(2)
+                        item.attrs['available'] = 'N'
                         os.system('CLS')
                         return current_room
                     elif not P.gun and command == 'shoot':
@@ -364,6 +378,7 @@ def main():
                         playSound(monSound)
                         P.decreaseHealth(monDamage)
                         time.sleep(1)
+                        pygame.mixer.fadeout(2)
                         monsterHealth -= 10
                     elif command in ['tab', 'i', 'I']:
                         inventory(current_room, P)
@@ -374,8 +389,11 @@ def main():
                         P.decreaseHealth(monDamage)
                 else:
                     print '\n\nYou gave it a good run, but your limbs were devoured by the', monName, '.'
+                    pygame.mixer.stop()
+                    os.system('CLS')
                     printASCII('Lose.txt')
                     playSound('zoombieWins.wav')
+                    playSound('loser.wav')
                     time.sleep(5)
                     os.system('CLS')
                     homeScreen()
@@ -386,20 +404,22 @@ def main():
     def play(P):
         # Where all the fun takes place!!
         os.system('CLS')
-        current_coord = (0, 0)
+        current_coord = P.coord
         while True:
             current_room = room_dict.get(current_coord)
             describe(current_room)
+            playSound('walk around.wav')
             command = get_command()
             current_coord = update_state(current_coord, command, P)
             pygame.mixer.stop()
             current_coord = engage(current_coord, P)
 
-    def quitGame(current_room):
+    def quitGame(current_room, P):
         print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO.'
         command = get_command()
         if command in ['y', 'yes', 'YES', 'Yes']:
-            saveGame(current_room)
+            os.system('CLS')
+            saveGame(current_room, P)
         elif command in ['n', 'no', 'NO', 'No']:
             print '\n\nUntil Next Time...'
             time.sleep(1)
@@ -411,14 +431,43 @@ def main():
             print 'That\'s not a valid command.'
             time.sleep(1)
 
-    def saveGame(current_room):
+    def saveGame(current_room, P):
         # currentLocation = room_dict[current_room]
         fileName = raw_input("Enter you name: ")
-        gameInfo = gameXml[1].flatten_self()
-        with open('Saved_Games\\' + fileName + ".xml", "w") as fout:
-            fout.write(gameInfo)
-        print "Your game has been saved,", fileName
+        P.coord = current_room
+        try:
+            with open('Saved_Games\\' + fileName.lower() + ".txt", "w") as fout:
+                pickle.dump(P, fout)
+            print "Your game has been saved,", fileName
+        except:
+            print 'There was a problem saving your game,', fileName
         return current_room
+
+    def loadGame():
+        fileName = raw_input('\n\n\n\n\n\t\t\tEnter your name: ')
+        P = Player()
+        try:
+            with open('Saved_Games\\' + fileName.lower() + '.txt', 'r') as fin:
+                Load = pickle.load(fin)
+            P.coord = Load.coord
+            P.monster = Load.monster
+            P.health = Load.health
+            P.inv = Load.inv
+            P.ammo = Load.ammo
+            P.points = Load.points
+            P.gun = Load.gun
+            P.gunDamage = Load.gunDamage
+            for key in P.inv.keys():
+                coord = P.inv.get(key)
+                room_dict[coord].Items[0].attrs['available'] = 'N'
+            for items in P.monster:
+                room_dict[items].Monster[0].attrs['available'] = 'N'
+            play(P)
+        except:
+            print '\n\n\n\n\n\t\t\tA saved game for', fileName, 'is not found.'
+            time.sleep(3)
+            os.system('CLS')
+            homeScreen()
 
     def describe(current_room):
         print current_room.Des[0].value
@@ -514,7 +563,7 @@ def main():
                 time.sleep(1)
                 os.system('CLS')
             return current_room
-        elif verb in ['take', 'grab', 'get']:       #todo lower case the input to avoid doing all the different checks for all the inputs.
+        elif verb in ['take', 'grab', 'get']:
             if hasattr(room_dict[current_room], "Items") and noun.lower() in \
                     [room_dict[current_room].Items[0].attrs['item'].lower(),
                      room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
@@ -546,7 +595,7 @@ def main():
             os.system('CLS')
             return room
         elif verb == 'q':
-            quitGame(current_room)
+            quitGame(current_room, P)
         elif verb in ['stat', 'health']:
             location = checkStat(current_room, P)
             return location
@@ -588,7 +637,7 @@ def main():
 
     homeScreen()
 
-logger = logging.out_file_instance('Zombie Raid')
+logger = logging.out_file_instance('Logs\\Zombie Raid')
 if __name__ == '__main__':
     try:
         main()
