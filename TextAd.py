@@ -10,12 +10,12 @@ pygame.mixer.init()
 
 def main():
     # Open and parse XML game map
-    global gameXml
     with open('game.xml', 'r') as fin:
         xml_file = fin.read()
     gameXml = wrap(xml_file)
     building = gameXml[1]
 
+    global room_dict
     # Make a dictionary that maps the room coordinates to the corresponding room data in the XML game map
     room_dict = {}
     for room in building.Room:
@@ -74,8 +74,7 @@ def main():
 
     def lookForItems(current_room, P):
         items = room_dict[current_room].Items
-        available = items[0].attrs['available']
-        if items and available == 'Y':
+        if items:
             for item in items:
                 print "\nYou see a " + item.attrs['item'].upper()
                 print '\nTo pick up items, type (grab/take + item).'
@@ -102,8 +101,7 @@ def main():
 
     def pickUpItem(current_room, P):
         items = room_dict[current_room].Items
-        available = items[0].attrs['available']
-        if items and available == 'Y':
+        if items:
             for item in items:
                 new_item = item.attrs['item']
                 str_item = str(new_item)
@@ -119,8 +117,9 @@ def main():
                 if item.Ammo:
                     ammo = literal_eval(item.Ammo[0].value)
                     P.increaseAmmo(ammo)
-                item.attrs['available'] = 'N'
-            return current_room
+                items.remove(item)
+                room_dict[current_room].children.remove(item)
+                return current_room
         else:
             print '\n\nThere are not any items to pick up.'
             time.sleep(1)
@@ -132,8 +131,7 @@ def main():
         location of the play stays the same, otherwise the player can proceed into the the room. This is retrieved from
         the XML game map tag 'Req' """
         require = room_dict[new_room].Req
-        available = require[0].attrs['available']
-        if require and available == 'Y':
+        if require:
             for item in require:
                 if item.attrs['item'] in P.inv.keys():
                     print '\n\nSince you have a(an) ' + item.attrs['item'] + ' you have access to this room.'
@@ -146,7 +144,8 @@ def main():
                             soundFile = item.ReqSound[0].value
                             sound = pygame.mixer.Sound(soundFile)
                             sound.play()
-                        item.attrs['available'] = 'N'
+                        require.remove(item)
+                        room_dict[new_room].children.remove(item)
                         return new_room
                     else:
                         print 'Clearly, you can\'t use that here!!.'
@@ -335,8 +334,7 @@ def main():
 
     def engage(current_room, P):
         mon = room_dict[current_room].Monster
-        available = mon[0].attrs['available']
-        if mon and available == 'Y':
+        if mon:
             for item in mon:
                 monDes = item.MonsterDes[0].value
                 print monDes, '\n\nUse your weapon to fight back!!'
@@ -369,7 +367,8 @@ def main():
                         raw_input('\n\nPress Enter Champ! ')
                         P.monster.append(current_room)
                         pygame.mixer.fadeout(2)
-                        item.attrs['available'] = 'N'
+                        mon.remove(item)
+                        room_dict[current_room].children.remove(item)
                         os.system('CLS')
                         return current_room
                     elif not P.gun and command == 'shoot':
@@ -432,18 +431,21 @@ def main():
             time.sleep(1)
 
     def saveGame(current_room, P):
-        # currentLocation = room_dict[current_room]
         fileName = raw_input("Enter you name: ")
         P.coord = current_room
         try:
-            with open('Saved_Games\\' + fileName.lower() + ".txt", "w") as fout:
-                pickle.dump(P, fout)
+            gameData = building.flatten_self()
+            with open('Saved_Games\\' + fileName.lower() + ".xml", "w") as fout:
+                fout.write(gameData)
+            with open('Saved_Games\\' + fileName.lower() + '.txt', 'w')as fout2:
+                pickle.dump(P, fout2)
             print "Your game has been saved,", fileName
         except:
             print 'There was a problem saving your game,', fileName
         return current_room
 
     def loadGame():
+        global room_dict
         fileName = raw_input('\n\n\n\n\n\t\t\tEnter your name: ')
         P = Player()
         try:
@@ -457,11 +459,16 @@ def main():
             P.points = Load.points
             P.gun = Load.gun
             P.gunDamage = Load.gunDamage
-            for key in P.inv.keys():
-                coord = P.inv.get(key)
-                room_dict[coord].Items[0].attrs['available'] = 'N'
-            for items in P.monster:
-                room_dict[items].Monster[0].attrs['available'] = 'N'
+            with open('Saved_Games\\' + fileName.lower() + '.xml', 'r') as fin2:
+                loadFile = fin2.read()
+            game = wrap(loadFile)
+            building = game[1]
+            room_dict = {}
+            for room in building.Room:
+                coord = room.attrs['coord']
+                strCoord = str(coord)
+                tupCoord = literal_eval(strCoord)
+                room_dict[tupCoord] = room
             play(P)
         except:
             print '\n\n\n\n\n\t\t\tA saved game for', fileName, 'is not found.'
@@ -564,19 +571,20 @@ def main():
                 os.system('CLS')
             return current_room
         elif verb in ['take', 'grab', 'get']:
-            if hasattr(room_dict[current_room], "Items") and noun.lower() in \
-                    [room_dict[current_room].Items[0].attrs['item'].lower(),
-                     room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
-                location = pickUpItem(current_room, P)
-                print '\nBackpack: ', P.inv.keys()
-                raw_input('\nPress Enter to continue...')
-                os.system('CLS')
-                return location
-            else:
-                print '\nThere\'s nothing worth taking.'
-                time.sleep(1)
-                os.system('CLS')
-            return current_room
+            try:
+                if hasattr(room_dict[current_room], "Items") and noun.lower() in \
+                        [room_dict[current_room].Items[0].attrs['item'].lower(),
+                         room_dict[current_room].Items[0].attrs['item'].lower().split()[1]]:
+                    location = pickUpItem(current_room, P)
+                    print '\nBackpack: ', P.inv.keys()
+                    raw_input('\nPress Enter to continue...')
+                    os.system('CLS')
+                    return location
+            except:
+                    print '\nThere\'s nothing worth taking.'
+                    time.sleep(1)
+                    os.system('CLS')
+                    return current_room
         elif room_dict[current_room].Mono and verb in ['talk', 't', 'speak']:
             if hasattr(room_dict[current_room], "Mono") and noun.lower() in \
                     [room_dict[current_room].Mono[0].attrs['person'].lower(),
