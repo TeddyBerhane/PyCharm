@@ -1,12 +1,12 @@
 from gameClasses import obj_wrapper as wrap
 from ast import literal_eval
+from operator import itemgetter
 from player import Player
 from msvcrt import getch, putch
 import time, os, sys, pygame.mixer
 from Q2API.util import logging
 import traceback, pickle
 pygame.mixer.init()
-
 
 def main():
     # Open and parse XML game map
@@ -15,7 +15,8 @@ def main():
     gameXml = wrap(xml_file)
     building = gameXml[1]
 
-    global room_dict
+    global room_dict, scores
+    scores = list()
     # Make a dictionary that maps the room coordinates to the corresponding room data in the XML game map
     room_dict = {}
     for room in building.Room:
@@ -91,12 +92,12 @@ def main():
         for mono in room_dict[current_room].Mono:
             if mono:
                 monoText = mono.value
-                # monoName = mono.attrs['person']
                 words = monoText.split('\n')
                 for line in words:
                     print line
                     time.sleep(1)
-                mono.attrs['available'] = 'N'
+                room_dict[current_room].Mono.remove(mono)
+                room_dict[current_room].children.remove(mono)
         return current_room
 
     def pickUpItem(current_room, P):
@@ -104,10 +105,12 @@ def main():
         if items:
             for item in items:
                 new_item = item.attrs['item']
+                points = literal_eval(item.attrs['expValue'])
+                P.points += points
                 str_item = str(new_item)
                 P.addToInv(str_item, current_room)
                 print '\n\n', item.ItemDes[0].value
-                print '\nYou picked up a(an) ' + str_item
+                print '\nYou picked up a(an) ' + str_item, '\n\nYou gained', points, 'points.'
                 if item.ItemArt:
                     fileName = item.ItemArt[0].value
                     printASCII(fileName)
@@ -269,7 +272,7 @@ def main():
                     '\n\nYou have', P.ammo, 'rounds left to use.' \
                     '\n\nTo fire', key, 'Press the PAGE DOWN button.' \
                     '\nYou can put away the', key, 'by typing (hide +', key, ')'
-                    P.useGun()
+                    P.useGun(key)
                     raw_input('\n\nPress Enter to continue...')
                     os.system('CLS')
                     return current_room
@@ -300,10 +303,10 @@ def main():
         return current_room
 
     def shootGun(current_room, P):
-        if P.gun and P.ammo > 0:
+        if P.gun == 'Shot Gun' and P.ammo > 0:
             for key, value in P.inv.iteritems():
-                sound = itemRoomDict[value].Items[0].UseSound
-                if sound:
+                if key == 'Shot Gun':
+                    sound = itemRoomDict[value].Items[0].UseSound
                     soundFile = sound[0].value
                     playSound(soundFile)
                     P.decreaseAmmo()
@@ -311,7 +314,21 @@ def main():
                     time.sleep(1)
                     os.system('CLS')
                     return current_room
-        elif P.gun and P.ammo <= 0:
+        elif P.gun == 'Hand Grenade' and P.ammo > 0:
+            for key,value in P.inv.iteritems():
+                if key == 'Hand Grenade':
+                    sound = itemRoomDict[value].Items[0].UseSound
+                    soundFile = sound[0].value
+                    playSound(soundFile)
+                    P.decreaseAmmo()
+                    for k in P.inv.keys():
+                        if k == key:
+                            del P.inv[k]
+                    print '\n\nRemaining Rounds:', P.ammo
+                    time.sleep(1)
+                    os.system('CLS')
+                    return current_room
+        elif P.gun != None and P.ammo <= 0:
             print 'You\'re out of ammo!!'
             time.sleep(1)
             os.system('CLS')
@@ -321,7 +338,7 @@ def main():
             P.health -= 1
             time.sleep(1)
             os.system('CLS')
-        return current_room
+            return current_room
 
     def printASCII(fileName):
         with open('Art\\' + fileName) as fin:
@@ -420,18 +437,49 @@ def main():
             os.system('CLS')
             saveGame(current_room, P)
         elif command in ['n', 'no', 'NO', 'No']:
-            print '\n\nUntil Next Time...'
-            time.sleep(1)
             os.system('CLS')
-            homeScreen()
+            printASCII('quit.txt')
+            score(P)
+            sys.exit()
         elif command == 'tab':
             return current_room
         else:
             print 'That\'s not a valid command.'
             time.sleep(1)
 
+    def score(P):
+        try:
+        #********************************Writing*************************************************
+            name = raw_input('\n\n\nEnter you name to record your score:')
+            saveScore = (P.points, name.upper())
+            with open('Art\\high_scores.txt', 'a+b') as fout:
+                fout.write(str(saveScore) + '\n')
+            print '\n\nYou can see your score by pressing TAB on the home screen.'.center(100)
+            homeScreen()
+        except:
+            print 'There was a problem...'
+            time.sleep(2)
+            homeScreen()
+
+    def showScore():
+        #********************************Reading*************************************************
+        printASCII('scores.txt')
+        try:
+            scores = []
+            with open('Art\\high_scores.txt', 'r') as fin:
+                fileOpen = fin.read()
+            for line in fileOpen[:-1].split('\n'):
+                score = literal_eval(line)
+                scores.append(score)
+            sortScore = sorted(scores, key=itemgetter(0), reverse=True)
+            for points, name in sortScore:
+               print (name + ' ' * 5 + str(points)).center(100)
+        except:
+            print 'Sorry. Cannot display high scores at this moment.'
+
     def saveGame(current_room, P):
-        fileName = raw_input("Enter you name: ")
+        os.system('CLS')
+        fileName = raw_input("\n\n\n\nEnter you name:")
         P.coord = current_room
         try:
             gameData = building.flatten_self()
@@ -439,14 +487,19 @@ def main():
                 fout.write(gameData)
             with open('Saved_Games\\' + fileName.lower() + '.txt', 'w')as fout2:
                 pickle.dump(P, fout2)
-            print "Your game has been saved,", fileName
+            print ("\n\n\n\nYour game has been saved," + fileName)
         except:
-            print 'There was a problem saving your game,', fileName
+            print ('\n\n\n\nThere was a problem saving your game,' + fileName)
         return current_room
 
     def loadGame():
         global room_dict
-        fileName = raw_input('\n\n\n\n\n\t\t\tEnter your name: ')
+        showScore()
+        print '\n\n\n\n\nEnter your name:'
+        fileName = get_command()
+        if fileName == 'tab':
+            os.system('CLS')
+            homeScreen()
         P = Player()
         try:
             with open('Saved_Games\\' + fileName.lower() + '.txt', 'r') as fin:
@@ -649,6 +702,8 @@ logger = logging.out_file_instance('Logs\\Zombie Raid')
 if __name__ == '__main__':
     try:
         main()
+    except SystemExit:
+        pass
     except:
         exception_string = traceback.format_exc()
         logger.write_line([exception_string])
