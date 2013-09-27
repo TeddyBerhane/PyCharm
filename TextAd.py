@@ -123,12 +123,12 @@ def main():
                     P.increaseAmmo(ammo)
                 items.remove(item)
                 room_dict[current_room].children.remove(item)
-                return current_room
+            return current_room
         else:
             print '\n\nThere are not any items to pick up.'
             time.sleep(1)
             os.system('CLS')
-            return current_room
+        return current_room
 
     def req(new_room, current_room, P):
         """Checks to see if the room the player is trying to enter has a requirement.If so a message is printed and the
@@ -180,11 +180,13 @@ def main():
                 for key in P.inv.keys():
                     if noun.lower() in [key.lower(), key.lower().split()[1]]:
                         room = lookInventory(current_room, noun.lower(), P)
+                        os.system('CLS')
                         return room
             elif verb in ['use', 'Use', 'u', 'U']:
                 for key in P.inv.keys():
                     if noun.lower() in [key.lower(), key.lower().split()[1]]:
                         room = useInventory(current_room, noun.lower(), P)
+                        os.system('CLS')
                         return room
             else:
                 print 'Not a valid command.'
@@ -247,10 +249,12 @@ def main():
                     print '\nPress Tab to return to game.'
                     command = get_command()
                     if command in ['tab', 'i', 'I']:
+                        os.system('CLS')
                         return current_room
                 else:
                     print 'This item cannot be used.'
                     time.sleep(1)
+                    os.system('CLS')
         return current_room
 
     def checkStat(current_room, P):
@@ -653,11 +657,16 @@ def main():
                     raw_input('\nPress Enter to continue...')
                     os.system('CLS')
                     return location
-            except:
+                else:
                     print '\nThere\'s nothing worth taking.'
                     time.sleep(1)
                     os.system('CLS')
                     return current_room
+            except:
+                print '\nThere\'s nothing worth taking.'
+                time.sleep(1)
+                os.system('CLS')
+                return current_room
         elif room_dict[current_room].Mono and verb in ['talk', 't', 'speak']:
             if hasattr(room_dict[current_room], "Mono") and noun.lower() in \
                     [room_dict[current_room].Mono[0].attrs['person'].lower(),
@@ -679,12 +688,15 @@ def main():
             quitGame(current_room, P)
         elif verb in ['stat', 'health']:
             location = checkStat(current_room, P)
+            os.system('CLS')
             return location
         elif verb in ['use', 'Use', 'u', 'U']:
             location = useItem(current_room, noun, P)
+            os.system('CLS')
             return location
         elif verb in ['hide', 'store']:
             location = putAwayItem(current_room, noun, P)
+            os.system('CLS')
             return location
         elif verb == 'shoot':
             location = shootGun(current_room, P)
