@@ -465,12 +465,9 @@ def main():
             print '\n\nYou can see your score by pressing TAB on the home screen.'.center(100)
             time.sleep(2)
             os.system('CLS')
-            homeScreen()
+            sys.exit()
         except:
-            print 'There was a problem...'
-            time.sleep(2)
-            os.system('CLS')
-            homeScreen()
+            sys.exit()
 
     def showScore():
         #********************************Reading*************************************************
