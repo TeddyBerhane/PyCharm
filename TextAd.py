@@ -189,7 +189,7 @@ def main():
                 print 'Not a valid command.'
                 time.sleep(1)
                 os.system('CLS')
-                describe(room_dict[current_room])
+                describe(room_dict[current_room], P)
         return inventory(current_room, P)
 
     def lookInventory(current_room, name, P):
@@ -412,8 +412,7 @@ def main():
                     playSound('loser.wav')
                     time.sleep(5)
                     os.system('CLS')
-                    homeScreen()
-                return current_room
+                    score(P)
         else:
             return current_room
 
@@ -423,7 +422,7 @@ def main():
         current_coord = P.coord
         while True:
             current_room = room_dict.get(current_coord)
-            describe(current_room)
+            describe(current_room, P)
             playSound('walk around.wav')
             command = get_command()
             current_coord = update_state(current_coord, command, P)
@@ -431,10 +430,13 @@ def main():
             current_coord = engage(current_coord, P)
 
     def quitGame(current_room, P):
+        os.system('CLS')
+        printASCII('save.txt')
         print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO.'
         command = get_command()
         if command in ['y', 'yes', 'YES', 'Yes']:
             os.system('CLS')
+            printASCII('save.txt')
             saveGame(current_room, P)
         elif command in ['n', 'no', 'NO', 'No']:
             os.system('CLS')
@@ -450,20 +452,24 @@ def main():
     def score(P):
         try:
         #********************************Writing*************************************************
+            printASCII('scores.txt')
             name = raw_input('\n\n\nEnter you name to record your score:')
             saveScore = (P.points, name.upper())
             with open('Art\\high_scores.txt', 'a+b') as fout:
                 fout.write(str(saveScore) + '\n')
             print '\n\nYou can see your score by pressing TAB on the home screen.'.center(100)
+            time.sleep(2)
+            os.system('CLS')
             homeScreen()
         except:
             print 'There was a problem...'
             time.sleep(2)
+            os.system('CLS')
             homeScreen()
 
     def showScore():
         #********************************Reading*************************************************
-        printASCII('scores.txt')
+        printASCII('highscoreascii.txt')
         try:
             scores = []
             with open('Art\\high_scores.txt', 'r') as fin:
@@ -472,29 +478,38 @@ def main():
                 score = literal_eval(line)
                 scores.append(score)
             sortScore = sorted(scores, key=itemgetter(0), reverse=True)
+            print '\n\n'
             for points, name in sortScore:
-               print (name + ' ' * 5 + str(points)).center(100)
+                print (name + ' ' * 5 + str(points)).rjust(52) + '\n'
         except:
-            print 'Sorry. Cannot display high scores at this moment.'
+            print '\n\n\n\nSorry. Cannot display high scores at this moment.'
 
     def saveGame(current_room, P):
         os.system('CLS')
         fileName = raw_input("\n\n\n\nEnter you name:")
         P.coord = current_room
-        try:
-            gameData = building.flatten_self()
-            with open('Saved_Games\\' + fileName.lower() + ".xml", "w") as fout:
-                fout.write(gameData)
-            with open('Saved_Games\\' + fileName.lower() + '.txt', 'w')as fout2:
-                pickle.dump(P, fout2)
-            print ("\n\n\n\nYour game has been saved," + fileName)
-        except:
-            print ('\n\n\n\nThere was a problem saving your game,' + fileName)
-        return current_room
+        if fileName != '':
+            try:
+                gameData = building.flatten_self()
+                with open('Saved_Games\\' + fileName.lower() + ".xml", "w") as fout:
+                    fout.write(gameData)
+                with open('Saved_Games\\' + fileName.lower() + '.txt', 'w')as fout2:
+                    pickle.dump(P, fout2)
+                print ("\n\n\n\nYour game has been saved," + fileName)
+            except:
+                print ('\n\n\n\nThere was a problem saving your game,' + fileName)
+            return current_room
+        else:
+            print 'Please enter a valid name.'
+            time.sleep(1)
+            quitGame(current_room, P)
+
 
     def loadGame():
         global room_dict
         showScore()
+        print '\n\n\n\n\n\n\n\n\n'
+        printASCII('load.txt')
         print '\n\n\n\n\nEnter your name:'
         fileName = get_command()
         if fileName == 'tab':
@@ -529,8 +544,11 @@ def main():
             os.system('CLS')
             homeScreen()
 
-    def describe(current_room):
-        print current_room.Des[0].value
+    def describe(current_room, P):
+        if P.gun != None and P.gun != False:
+            print current_room.Des[0].value, P.gun.rjust(0)
+        else:
+            print current_room.Des[0].value
         for art in current_room.Art:
             if art:
                 fileName = current_room.Art[0].value
