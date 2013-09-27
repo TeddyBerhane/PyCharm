@@ -71,6 +71,8 @@ def main():
             os.system('CLS')
             print '\n\n\n\tI don\'t understand your command. Please press ENTER to play, or ESC to exit. ' \
                   'Please try again. \n\n'
+            time.sleep(2)
+            os.system('CLS')
             homeScreen()
 
     def lookForItems(current_room, P):
