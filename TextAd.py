@@ -546,7 +546,8 @@ def main():
     def describe(current_room, P):
         if P.gun != None and P.gun != False:
             print current_room.Des[0].value
-            print P.gun.rjust(100)
+            print '\n'
+            print (chr(220)+chr(205)+chr(203)+chr(205)+chr(190)).rjust(97)
         else:
             print current_room.Des[0].value
         for art in current_room.Art:
