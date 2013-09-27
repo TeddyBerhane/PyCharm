@@ -6,7 +6,7 @@ class Player(object):
         self.inv = {}
         self.ammo = 0
         self.points = 0
-        self.gun = False
+        self.gun = None
         self.gunDamage = 0
 
     def addToInv(self, name, coord):
@@ -32,8 +32,8 @@ class Player(object):
     def addToGunDamage(self, amount):
         self.gunDamage = amount
 
-    def useGun(self):
-        self.gun = True
+    def useGun(self, noun):
+        self.gun = noun
 
     def putUpGun(self):
-        self.gun = False
+        self.gun = None
