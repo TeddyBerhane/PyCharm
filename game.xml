@@ -1,7 +1,34 @@
+<!--<Building>-->
+    <!--<intro/>-->
+    <!--<player>-->
+        <!--<Items/>-->
+    <!--</player>-->
+    <!--<Room>-->
+        <!--<desc>-->
+            <!--<sound/>-->
+            <!--<art/>-->
+        <!--</desc>-->
+        <!--<item>-->
+            <!--<desc>-->
+            <!--</desc>-->
+        <!--</item>-->
+        <!--<exit/>-->
+        <!--<monster>-->
+            <!--<desc/>-->
+        <!--</monster>-->
+        <!--<req>-->
+            <!--<msg/>-->
+        <!--</req>-->
+    <!--</Room>-->
+<!--</Building>-->
 <Building>
+    <!--<Player current_room = "(0, 0)" health="100">-->
+        <!--<Items/>-->
+        <!--<Items/>-->
+    <!--</Player>-->
     <Room coord = '(100, 100)'>
         <Des>Home.txt</Des>
-        <Event>None</Event>
+        <Sound>Home Screen Sound.wav</Sound>
         <Exit>(0,1)</Exit>
     </Room>
 
@@ -12,7 +39,7 @@
 
             The entrance is to your NORTH.
         </Des>
-        <Event>None</Event>
+        <Art>building.txt</Art>
         <Exit>(0,1)</Exit>
     </Room>
 
@@ -31,7 +58,6 @@
             <ItemDes>You find a flashlight. Definitely a good find for this dark place.</ItemDes>
             <ItemArt>flashlight.txt</ItemArt>
         </Items>
-        <Event>None</Event>
         <Exit>(0,0)</Exit>
         <Exit>(0,2)</Exit>
         <Exit>(-1,1)</Exit>
@@ -53,7 +79,6 @@
         </Req>
         <Art>stairs.txt</Art>
         <Sound>steps.wav</Sound>
-        <Event>None</Event>
         <Exit>(0,1)</Exit>
         <Exit>(-1,2)</Exit>
 
@@ -90,7 +115,6 @@
 
             Before you get a chance to thank the old man, he's dead.
         </Mono>
-        <Event>None</Event>
         <Items item = 'Silver Key' healthValue = "0" expValue = "10" use = 'False'>
             <ItemDes>You find a small, shiny, silver key on the ground.</ItemDes>
             <ItemArt>key.txt </ItemArt>
@@ -110,8 +134,7 @@
             Where to?
         </Des>
         <Sound>water.wav</Sound>
-        <Event>None</Event>
-        <Items item = 'Shot Gun' healthValue = "0" damage = "30" use = 'True'>
+        <Items item = 'Shot Gun' healthValue = "0" damage = "30" expValue = '15' use = 'True'>
             <ItemDes>You find a 12 gauge shot gun leaning against one of the corners of the room.</ItemDes>
             <ItemArt>shotgun.txt</ItemArt>
             <ItemSound>gun.wav</ItemSound>
@@ -125,8 +148,7 @@
 
     <Room coord = '(1, 2)'>
         <Des>
-        There is a radio transmitter in this room and you listen to a message filled
-        with static, but you can't make out the message.
+        You find your self in a clutter filled room. There is stuff everywhere!!
 
         You see a doorway to the EAST.
 
@@ -134,7 +156,6 @@
 
                 Where to?
         </Des>
-        <Event>None</Event>
         <Items item = 'Two-Way Radio' healthValue = "0" expValue = "20" use = 'False'>
             <ItemDes>Man on radio: "If there are any survivors in the building,
                 there is an air lift coming in 5 minutes! We'll be on the roof of this building."</ItemDes>
@@ -169,6 +190,7 @@
                 You are attacked by a zombie that is in pretty bad condition.
                 Shouldn't take much!
             </MonsterDes>
+            <BattleMusic>GameSound.wav</BattleMusic>
             <MonsterAttack>ZombieAttack.wav</MonsterAttack>
             <MonsterArt>zombie.txt</MonsterArt>
         </Monster>
@@ -184,7 +206,6 @@
 
             Where to?
         </Des>
-        <Event>None</Event>
         <Exit>(-2,2)</Exit>
         <Exit>(-1,1)</Exit>
     </Room>
@@ -201,7 +222,6 @@
 
             Where to?
         </Des>
-        <Event>None</Event>
         <Exit>(-2,3)</Exit>
         <Exit>(-2,1)</Exit>
         <Exit>(-3,2)</Exit>
@@ -217,11 +237,11 @@
 
             Where to?
         </Des>
+        <Art>window.txt</Art>
         <Items item = 'Long Rope' healthValue = '0' expValue = '10' use = 'False'>
             <ItemDes>A long role of nylon rope. Rope is always a good thing.</ItemDes>
             <ItemArt>rope.txt</ItemArt>
         </Items>
-        <Event>None</Event>
         <Exit>(-2,2)</Exit>
 
     </Room>
@@ -243,26 +263,26 @@
             <MonsterDes>
                 You are cornered by a zombie!!
             </MonsterDes>
+            <BattleMusic>GameSound.wav</BattleMusic>
             <MonsterAttack>ZombieAttack.wav</MonsterAttack>
             <MonsterArt>zombie.txt</MonsterArt>
         </Monster>
-        <Event>None</Event>
         <Exit>(-2,2)</Exit>
     </Room>
     <Room coord = '(-3, 2)'>
         <Des>
             Roof access is available in this room. But the roof is really high!
-            Where to?
 
-                Exit is to the
+                Exit is to the EAST
+
+            Go up???
         </Des>
-        <Items item = 'Hand Grenade' healthValue = "0" damage = "100" use = 'True'>
+        <Items item = 'Hand Grenade' healthValue = "0" damage = "100" expValue = '30' use = 'True'>
             <ItemDes>You find a hand grenade.</ItemDes>
             <ItemArt>grenade.txt</ItemArt>
             <UseSound>bomb.wav</UseSound>
             <Ammo>1</Ammo>
         </Items>
-        <Event>None</Event>
         <Exit>(-2,2)</Exit>
         <Exit>(-3,3)</Exit>
     </Room>
@@ -276,23 +296,24 @@
         <Req item = 'Step Ladder'>
             <ReqMes>You need some way to get to the roof hatch! It's really high.</ReqMes>
         </Req>
-        <Event>None</Event>
         <Exit>(-3,2)</Exit>
         <Exit>(-3,4)</Exit>
     </Room>
     <Room coord = '(-3, 4)'>
         <Des>
-            You're standing under the hovering helicopter.
+            You're standing under the hovering helicopter...
+
+            Go up???
         </Des>
         <Monster name = 'Zombie' damage = '30' health = '100' experience = '50'>
             <MonsterDes>
                 You are facing the leader of the Zombie pack, Spider Zombie!!
                 He looks angry.
             </MonsterDes>
+            <BattleMusic>GameSound.wav</BattleMusic>
             <MonsterAttack>ZombieAttack.wav</MonsterAttack>
             <MonsterArt>Spiderman.txt</MonsterArt>
         </Monster>
-        <Event>None</Event>
         <Exit>(-3,3)</Exit>
         <Exit>(-3,5)</Exit>
     </Room>
@@ -306,7 +327,6 @@
         </Req>
         <Art>heli.txt</Art>
         <Sound>Heli.wav</Sound>
-        <Event>None</Event>
         <Exit>Winner</Exit>
     </Room>
 </Building>
