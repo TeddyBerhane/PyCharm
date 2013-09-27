@@ -133,6 +133,7 @@
 
             Where to?
         </Des>
+        <Art>water.txt</Art>
         <Sound>water.wav</Sound>
         <Items item = 'Shot Gun' healthValue = "0" damage = "30" expValue = '15' use = 'True'>
             <ItemDes>You find a 12 gauge shot gun leaning against one of the corners of the room.</ItemDes>
