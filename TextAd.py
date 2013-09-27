@@ -504,7 +504,6 @@ def main():
             time.sleep(1)
             quitGame(current_room, P)
 
-
     def loadGame():
         global room_dict
         showScore()
@@ -546,7 +545,8 @@ def main():
 
     def describe(current_room, P):
         if P.gun != None and P.gun != False:
-            print current_room.Des[0].value, P.gun.rjust(0)
+            print current_room.Des[0].value
+            print P.gun.rjust(100)
         else:
             print current_room.Des[0].value
         for art in current_room.Art:
@@ -561,7 +561,7 @@ def main():
             if exits.value == 'Winner':
                 time.sleep(10)
                 os.system('CLS')
-                homeScreen()
+                score(P)
         print '\n\nPress TAB or ("I" + Enter) to view your inventory.'
         print '\n\nWould you like to look around? Press ("L" + Enter) to look.'
 
