@@ -1,0 +1,60 @@
+
+                                     WELCOME TO ZOMBIE RAID!
+
+    The zombie apocalypse in here, and you are one of the few survivors in the city. As the
+    zombies search the city looking for the living, you are running through the city trying to
+    escape. Pick up clues and items and maybe you can survive another day.
+
+
+****************************************************************************************************
+*   This game uses the ARROW keys and the 'n', 'e', 's', 'w' keys on your keyboard for directions. *
+*                                                                                                  *
+*                               'n'  or UP ARROW = North                                           *
+*                               'e'  or RIGHT ARROW = East                                         *
+*                               's'  or DOWN ARROW = South                                         *
+*                               'w'  or LEFT ARROW = West                                          *
+*                                   PAGE DOWN = Attack                                             *
+*               You are also able to give a verb, noun commands as well. (EX. go north)            *
+*                    You can at anytime press ESC to return to this screen                         *
+****************************************************************************************************
+
+     __________________________      __________________________       __________________________
+    *                          *    *    PRESS TAB TO LOAD     *     *                          *
+    *   PRESS ENTER TO BEGIN   *    *     SAVED GAMES OR       *     *    PRESS ESC TO QUIT     *
+    *__________________________*    *____VIEW HIGH SCORES______*     *__________________________*
+
+                                             WQNNNNN#Q
+                                        QNNNNNNNNNNNNNNNNNN
+                                     QNNNNNNNNNNNNNNNNNNNNNNNN
+                                   NNNNNNNNNNNNNNNNNNNNNNNNNN###Q
+                                 NNNNNNNNNNNNNNNNNNNNNNNNNNNN####NQ
+                               QNNNNNNNNNNNNNNNNNNQ^  NNN ^QNN#####N
+                              QNNN#NNNNNNNNNNNNNNQ^Q^ N#^^  ^N#######
+                             QNNNN#NNNNNNNNNNNNNQ    NN     N#########
+                            NNNNNNNNNNNNNNNNNNNQ ^  N#Q^  ^#N##########
+                            NNNNNNNNNNNNNNNNNNNQ^^ ^NNQ  ^N#N#NNNQNN###N
+                           NNNNNNNNNNNNNNNNNNNNQ   ^NQ    NN#NN  ^^^N###
+                          QNNNNNNNNNNNNNNNNNNNNQ^^^ N    Q#NN ^^Q^^QN####
+                          NNNNNNNNNNNNNNNNNNNNN    QQ    NNN ^   N#N#####Q
+                          NNNNNNNNNNNNNNNNNNNNQ  ^      ^       ##N#######
+                          NNNNNNNNNNN#NNNNNNNNQ              ^^##########N
+                          NNNNNNNNNNNNN ^ NNNN^             ^ N#N##QQQN##N
+                          NNNNNNNNNNNNQ^ ^QNNQ^               N^    ^  N#N
+                          N#NNNNNNNNNQ    ^NQ    ^                     N#Q
+                          #NNNNNNNNNQ ^    Q                   ^ ^Q#N####
+                           #NNNNNNNNNQ^                         ########N
+                           NNNNNNNNNNN                         N########
+                            NNNNNNNNNNN^                       N#######Q
+                            QNNNNNNNNNNN                      NN######N
+                              NNNNNNNNNNNN            ^  ^  ^QN#######
+                               NNNNNNNN#NN#             ^^  NN#####NQ
+                                NNNNNN#NNNNNN           ^^^#NN#####W
+                                  ###NNNNNNNNQ^           NNN###Q#
+                                    NNNNNNNNNQ           NNNNQQQ
+                                      QN##NN#Q           NN##Q
+                                          ##NQ           Q
+                                           Q ^           W
+                                           RQ            W
+                                           WQ            W
+                                           QQ^           R
+                                           QQ            R

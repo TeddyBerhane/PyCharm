@@ -1,0 +1,51 @@
+
+                                NN    NN  N
+                               NNNN  N N NN
+                                NNN   NNN
+                               NNNN  NNNN N
+                               NNNN   NNN N
+                                N N   NN N
+                               NNNN  NNNN
+                                NN N NNNN
+                               NNNN N N
+                               NNN  NNNN
+                               NNN NNNN N
+                              NNNNNNNNN
+                             NN NNNNNN
+                             N NNNNNN N
+                              NNN NNNN
+                           NNNNNNNNNNNN
+                         NNNNNNNNN NNNNN
+                       NNNNNN NNNNNNNNNN
+                       NNNNN NNNNNN NN NN
+                      NNN N   NNNNN N NN
+                      NNNN   NNNN NNNNNN
+                     NNNN    N NNNN N NN
+                    NN NN  N NN  NNN NN
+                     NNNN    NNNNNNNNN
+                      NNNNNNNNNNNNNN N
+                      N NNNNNNNNNNNNNN
+                    NNNNNNNNNNNNNNNNNNNN N
+                     NNNNNNNN NNNNNNN NNNN N
+                    NNNNNNNNNNNNNN  NNN NNNNN
+                    NNNNNNNNNNNNN NN NNN  NNN
+                    NNNNNN  NNNNNN N  NNNN NNN
+                    NNNNNNNN NNN     N NNNNNNNNN
+                      NNNNNNN          N N NN NN
+                    NNNNNNNN           NNNNNNNNN
+                   NNNNNN N             NNN NNNN N
+                   NNN NNN              NNNN NNNN
+                N NNN NNN                NNNNN NN
+                  NNN  NNN               N N NNNNN
+                 N NNNNNN                NNN NNN N
+                 NNN NNN                NNN  NNN
+                N NNNNNNNN             NNNNN NNN
+                NNNN NNNN            NNNNN  NNNN
+                N NN NNNNN           NNNNNNNNN N
+                 NNNN NNN        NNNNNNNNNNNNN
+                NNNN  NNNNNN NN NNNNNNN NNNNNN
+                 NNNN  NNNNNNNNNNNNNNNNNNNN N
+                   NNNNNNNNNNNNNN    NNNNN N
+                    NNNNNNNNNNNNNNN NNNNNN
+                     N NNNNNNNNNNNNN NN N
+                           NNNN
