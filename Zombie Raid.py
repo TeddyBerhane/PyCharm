@@ -410,11 +410,12 @@ def main():
                 else:
                     print '\n\nYou gave it a good run, but your limbs were devoured by the', monName, '.'
                     pygame.mixer.stop()
+                    playSound('zombieWins.wav')
                     os.system('CLS')
                     printASCII('Lose.txt')
-                    playSound('zoombieWins.wav')
+                    time.sleep(3)
                     playSound('loser.wav')
-                    time.sleep(5)
+                    time.sleep(2)
                     os.system('CLS')
                     score(P)
         else:
@@ -436,7 +437,7 @@ def main():
     def quitGame(current_room, P):
         os.system('CLS')
         printASCII('save.txt')
-        print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO.'
+        print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO. Press TAB to return to game.'
         command = get_command()
         if command in ['y', 'yes', 'YES', 'Yes']:
             os.system('CLS')
@@ -446,7 +447,6 @@ def main():
             os.system('CLS')
             printASCII('quit.txt')
             score(P)
-            main()
         elif command == 'tab':
             return current_room
         else:
@@ -465,6 +465,7 @@ def main():
             print '\n\nYou can see your score by pressing TAB on the home screen.'.center(100)
             time.sleep(2)
             os.system('CLS')
+            main()
         except:
             sys.exit()
 
@@ -512,6 +513,7 @@ def main():
         showScore()
         print '\n\n\n\n\n\n\n\n\n'
         printASCII('load.txt')
+        print '\n\n\n\nPress TAB to go back to home screen.'
         print '\n\n\n\n\nEnter your name:'
         fileName = get_command()
         if fileName == 'tab':
