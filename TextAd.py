@@ -15,8 +15,7 @@ def main():
     gameXml = wrap(xml_file)
     building = gameXml[1]
 
-    global room_dict, scores
-    scores = list()
+    global room_dict
     # Make a dictionary that maps the room coordinates to the corresponding room data in the XML game map
     room_dict = {}
     for room in building.Room:
@@ -447,12 +446,13 @@ def main():
             os.system('CLS')
             printASCII('quit.txt')
             score(P)
-            sys.exit()
+            main()
         elif command == 'tab':
             return current_room
         else:
             print 'That\'s not a valid command.'
             time.sleep(1)
+            os.system('CLS')
 
     def score(P):
         try:
@@ -465,7 +465,6 @@ def main():
             print '\n\nYou can see your score by pressing TAB on the home screen.'.center(100)
             time.sleep(2)
             os.system('CLS')
-            sys.exit()
         except:
             sys.exit()
 
@@ -490,7 +489,7 @@ def main():
         os.system('CLS')
         fileName = raw_input("\n\n\n\nEnter you name:")
         P.coord = current_room
-        if fileName != '':
+        if len(fileName) > 1:
             try:
                 gameData = building.flatten_self()
                 with open('Saved_Games\\' + fileName.lower() + ".xml", "w") as fout:
@@ -500,6 +499,8 @@ def main():
                 print ("\n\n\n\nYour game has been saved," + fileName)
             except:
                 print ('\n\n\n\nThere was a problem saving your game,' + fileName)
+            time.sleep(1)
+            os.system('CLS')
             return current_room
         else:
             print 'Please enter a valid name.'
@@ -549,7 +550,7 @@ def main():
         if P.gun != None and P.gun != False:
             print current_room.Des[0].value
             print '\n'
-            print (chr(220)+chr(205)+chr(203)+chr(205)+chr(190)).rjust(97)
+            print (str(P.ammo)+'  '+ chr(220)+chr(205)+chr(203)+chr(205)+chr(190)).rjust(97)
         else:
             print current_room.Des[0].value
         for art in current_room.Art:
