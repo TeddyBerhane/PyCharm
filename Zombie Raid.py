@@ -242,6 +242,9 @@ def main():
                     if item[0].ItemArt:
                         fileName = item[0].ItemArt[0].value
                         printASCII(fileName)
+                    if item[0].attrs['ammo']:
+                        ammo = literal_eval(item[0].attrs['ammo'])
+                        P.increaseAmmo(ammo)
                     for k in P.inv.keys():
                         if k == item[0].attrs['item']:
                             del P.inv[k]
@@ -328,6 +331,7 @@ def main():
                     for k in P.inv.keys():
                         if k == key:
                             del P.inv[k]
+                    P.gun = False
                     print '\n\nRemaining Rounds:', P.ammo
                     time.sleep(1)
                     os.system('CLS')
