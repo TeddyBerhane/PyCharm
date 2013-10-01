@@ -179,7 +179,7 @@
 
                 Where to?
         </Des>
-        <Items item = 'First Aid' healthValue = '40' expValue = '5' use = 'False'>
+        <Items item = 'First Aid' healthValue = '40' expValue = '5' ammo = '0' use = 'False'>
             <ItemDes>You find a First Aid Kit.</ItemDes>
             <ItemArt>firstaid.txt</ItemArt>
             <ItemUse>
@@ -239,9 +239,11 @@
             Where to?
         </Des>
         <Art>window.txt</Art>
-        <Items item = 'Long Rope' healthValue = '0' expValue = '10' use = 'False'>
-            <ItemDes>A long role of nylon rope. Rope is always a good thing.</ItemDes>
-            <ItemArt>rope.txt</ItemArt>
+        <Items item = 'Gun Ammo' healthValue = '0' expValue = '10' ammo = '30' use = 'False'>
+            <ItemDes>You find shotgun rounds. Good find.</ItemDes>
+            <ItemUse>
+                You reload your shot gun.
+            </ItemUse>
         </Items>
         <Exit>(-2,2)</Exit>
 
@@ -306,7 +308,7 @@
 
             Go up???
         </Des>
-        <Monster name = 'Zombie' damage = '30' health = '100' experience = '50'>
+        <Monster name = 'Spider Zombie' damage = '40' health = '100' experience = '150'>
             <MonsterDes>
                 You are facing the leader of the Zombie pack, Spider Zombie!!
                 He looks angry.
@@ -315,6 +317,10 @@
             <MonsterAttack>ZombieAttack.wav</MonsterAttack>
             <MonsterArt>Spiderman.txt</MonsterArt>
         </Monster>
+        <Items item = 'Long Rope' healthValue = '0' expValue = '10' use = 'False'>
+            <ItemDes>A long role of nylon rope. Rope is always a good thing.</ItemDes>
+            <ItemArt>rope.txt</ItemArt>
+        </Items>
         <Exit>(-3,3)</Exit>
         <Exit>(-3,5)</Exit>
     </Room>
