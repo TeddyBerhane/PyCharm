@@ -1,9 +1,18 @@
 
-                                     WELCOME TO ZOMBIE RAID!
+          ______ ____   __  __  ____  _____  ______   _____             _____  _____
+         |___  // __ \ |  \/  ||  _ \|_   _||  ____| |  __ \     /\    |_   _||  __ \
+            / /| |  | || \  / || |_) | | |  | |__    | |__) |   /  \     | |  | |  | |
+           / / | |  | || |\/| ||  _ <  | |  |  __|   |  _  /   / /\ \    | |  | |  | |
+          / /__| |__| || |  | || |_) |_| |_ | |____  | | \ \  / ____ \  _| |_ | |__| |
+         /_____|\____/ |_|  |_||____/|_____||______| |_|  \_\/_/    \_\|_____||_____/
+
+
 
     The zombie apocalypse in here, and you are one of the few survivors in the city. As the
     zombies search the city looking for the living, you are running through the city trying to
     escape. Pick up clues and items and maybe you can survive another day.
+
+
 
 
 ****************************************************************************************************
@@ -14,14 +23,20 @@
 *                               's'  or DOWN ARROW = South                                         *
 *                               'w'  or LEFT ARROW = West                                          *
 *                                   PAGE DOWN = Attack                                             *
+*                                                                                                  *
 *               You are also able to give a verb, noun commands as well. (EX. go north)            *
 *                    You can at anytime press ESC to return to this screen                         *
 ****************************************************************************************************
-
+                     HINT: A WEAPON IS NO GOOD SITTING IN YOUR INVENTORY
      __________________________      __________________________       __________________________
     *                          *    *    PRESS TAB TO LOAD     *     *                          *
     *   PRESS ENTER TO BEGIN   *    *     SAVED GAMES OR       *     *    PRESS ESC TO QUIT     *
     *__________________________*    *____VIEW HIGH SCORES______*     *__________________________*
+
+
+
+
+
 
                                              WQNNNNN#Q
                                         QNNNNNNNNNNNNNNNNNN
