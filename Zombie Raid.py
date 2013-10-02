@@ -441,7 +441,7 @@ def main():
     def quitGame(current_room, P):
         os.system('CLS')
         printASCII('save.txt')
-        print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO. Press TAB to return to game.'
+        print '\n\n\t\t\tWOULD YOU LIKE TO SAVE YOUR GAME? Enter YES/NO. \n\t\t\tPress TAB to return to game.'
         command = get_command()
         if command in ['y', 'yes', 'YES', 'Yes']:
             os.system('CLS')
@@ -451,7 +451,10 @@ def main():
             os.system('CLS')
             printASCII('quit.txt')
             score(P)
+        elif command == 'q':
+            main()
         elif command == 'tab':
+            os.system('CLS')
             return current_room
         else:
             print 'That\'s not a valid command.'
@@ -569,7 +572,20 @@ def main():
                     playSound(soundFile)
         for exits in current_room.Exit:
             if exits.value == 'Winner':
-                time.sleep(10)
+                printASCII('heli.txt')
+                time.sleep(1)
+                os.system('CLS')
+                printASCII('heli2.txt')
+                time.sleep(1)
+                os.system('CLS')
+                printASCII('heli3.txt')
+                time.sleep(1)
+                os.system('CLS')
+                printASCII('heli4.txt')
+                time.sleep(1)
+                os.system('CLS')
+                printASCII('heli5.txt')
+                time.sleep(4)
                 os.system('CLS')
                 score(P)
         print '\n\nPress TAB or ("I" + Enter) to view your inventory.'
