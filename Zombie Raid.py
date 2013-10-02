@@ -259,12 +259,6 @@ def main():
                     os.system('CLS')
         return current_room
 
-    def checkStat(current_room, P):
-        print '\nHEALTH:', P.health, '\n\nPOINTS:', P.points, '\n\nAMMO:', P.ammo
-        raw_input('\nPress Enter to continue...')
-        os.system('CLS')
-        return current_room
-
     def useItem(current_room, noun, P):
         for key in P.inv.keys():
             if (noun == key.lower() or
@@ -706,10 +700,6 @@ def main():
             return room
         elif verb == 'q':
             quitGame(current_room, P)
-        elif verb in ['stat', 'health']:
-            location = checkStat(current_room, P)
-            os.system('CLS')
-            return location
         elif verb in ['use', 'Use', 'u', 'U']:
             location = useItem(current_room, noun, P)
             os.system('CLS')
