@@ -326,13 +326,11 @@
     </Room>
     <Room coord = '(-3, 5)'>
         <Des>
-            You made it in the helicopter!! What an adventure!!
             Congratulations!! You escaped!
         </Des>
         <Req item = 'Long Rope'>
             <ReqMes>You need a rope to throw up to the helicopter!!</ReqMes>
         </Req>
-        <Art>heli.txt</Art>
         <Sound>Heli.wav</Sound>
         <Exit>Winner</Exit>
     </Room>
