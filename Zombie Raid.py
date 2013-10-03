@@ -4,6 +4,7 @@ from operator import itemgetter
 from player import Player
 from msvcrt import getch, putch
 import time, os, sys, pygame.mixer
+from homescreen import screen
 from Q2API.util import logging
 import traceback, pickle
 pygame.mixer.init()
@@ -49,11 +50,11 @@ def main():
     def homeScreen():
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
-        os.system('mode con: cols=110 lines=90')
-        intro = room_dict[(100, 100)].Des[0].value
+        # intro = room_dict[(100, 100)].Des[0].value
         sound = room_dict[(100, 100)].Sound[0].value
-        printASCII(intro)
+        # printASCII(intro)
         playSound(sound)
+        screen()
         command = ord(getch())
         if command == 13:
             os.system('CLS')
@@ -739,6 +740,7 @@ def main():
             time.sleep(1)
         return current_room
 
+    os.system('mode con: cols=110 lines=90')
     homeScreen()
 
 logger = logging.out_file_instance('Logs\\Zombie Raid')
