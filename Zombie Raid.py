@@ -49,6 +49,7 @@ def main():
     def homeScreen():
         """Make a home screen for the game along with the intro for the game. Uses the first "Room" tag from XML
         game tag with coordinates (100, 100) ***This coordinate is not reachable in the game***"""
+        os.system('mode con: cols=110 lines=90')
         intro = room_dict[(100, 100)].Des[0].value
         sound = room_dict[(100, 100)].Sound[0].value
         printASCII(intro)
