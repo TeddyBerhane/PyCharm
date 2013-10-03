@@ -188,8 +188,8 @@
         </Items>
         <Monster name = 'Zombie' damage = '5' health = '20' experience = '50'>
             <MonsterDes>
-                You are attacked by a zombie that is in pretty bad condition.
-                Shouldn't take much!
+                You are attacked by a zombie that is missing his legs. He starts crawling
+                towards you and nibbling on your foot.
             </MonsterDes>
             <BattleMusic>GameSound.wav</BattleMusic>
             <MonsterAttack>ZombieAttack.wav</MonsterAttack>
@@ -213,7 +213,7 @@
 
     <Room coord = '(-2, 2)'>
         <Des>
-            You are in the dim second floor hallway. You notice 3 locks in the hallway.
+            You find your self in a hallway. You notice 3 doors in the hallway.
 
                 One to your NORTH
                 One to your SOUTH
